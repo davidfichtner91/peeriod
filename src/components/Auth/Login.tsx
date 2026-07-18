@@ -46,7 +46,7 @@ export function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white"
-              placeholder="tvojeemail@example.com"
+              placeholder="jmeno@domena.cz"
             />
           </div>
 

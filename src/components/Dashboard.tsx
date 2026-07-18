@@ -82,7 +82,7 @@ export function Dashboard() {
             <span className="text-2xl font-bold text-slate-900 dark:text-white">PEERIOD</span>
           </button>
           <div className="flex items-center gap-4">
-            <p className="text-slate-600 dark:text-slate-400 text-sm">Ahoj, {user?.name}!</p>
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Ahoj, chlape!</h2>
             <button
               onClick={signOut}
               className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition text-sm"
