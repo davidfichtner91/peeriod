@@ -33,11 +33,7 @@ function App() {
 
           <Route
             path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
+            element={<Settings />}
           />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
