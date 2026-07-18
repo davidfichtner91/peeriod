@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { Logo } from './Logo'
 
 interface Cycle {
   id: string
@@ -85,7 +86,8 @@ export function Settings() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-950 dark:to-purple-950">
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <div className="mb-8">
+        <div className="mb-8 flex items-center gap-2">
+          <Logo variant="gradient" size={32} />
           <a
             href="/dashboard"
             className="text-purple-600 dark:text-purple-400 hover:underline text-sm font-medium"

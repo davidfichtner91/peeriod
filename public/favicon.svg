@@ -1,0 +1,16 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PEERIOD">
+  <defs>
+    <linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="64" y2="64">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(-6.5,-3.5) scale(0.36)" fill="none" stroke="url(#fg)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="100" r="36"/>
+    <path d="M125.5 74.5 L162 38"/>
+    <path d="M140 38 H162 V60"/>
+    <path d="M100 136 V178"/>
+    <path d="M78 160 H122"/>
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PEERIOD">
+  <defs>
+    <linearGradient id="ig" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#ig)"/>
+  <g transform="translate(-1,25) scale(2.14)" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="100" r="36"/>
+    <path d="M125.5 74.5 L162 38"/>
+    <path d="M140 38 H162 V60"/>
+    <path d="M100 136 V178"/>
+    <path d="M78 160 H122"/>
+  </g>
+</svg>

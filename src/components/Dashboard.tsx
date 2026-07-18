@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calculateCycleInfo, PHASE_DATA } from '../utils/cycle'
 import { Calendar } from './Calendar'
 import { PhaseDetail } from './PhaseDetail'
+import { Logo } from './Logo'
 
 interface Cycle {
   id: string
@@ -13,6 +15,7 @@ interface Cycle {
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const [cycle, setCycle] = useState<Cycle | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -71,16 +74,22 @@ export function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">PEERIOD</h1>
-            <p className="text-slate-600 dark:text-slate-400 text-sm">Ahoj, {user?.name}!</p>
-          </div>
           <button
-            onClick={signOut}
-            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition text-sm"
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-3 hover:opacity-80 transition"
           >
-            Odhlásit se
+            <Logo variant="gradient" size={40} />
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">PEERIOD</span>
           </button>
+          <div className="flex items-center gap-4">
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Ahoj, {user?.name}!</p>
+            <button
+              onClick={signOut}
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition text-sm"
+            >
+              Odhlásit se
+            </button>
+          </div>
         </div>
 
         {/* Current phase card */}
