@@ -62,7 +62,7 @@ export function Onboarding() {
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Jak dlouhý je tvůj cyklus? (dny)
+              Jak dlouhý je jejího cyklus? (dny)
             </label>
             <div className="flex items-center gap-4">
               <input
