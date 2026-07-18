@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export function Login() {
@@ -76,13 +76,6 @@ export function Login() {
             {loading ? 'Přihlašuji...' : 'Přihlásit se'}
           </button>
         </form>
-
-        <p className="text-center text-slate-600 dark:text-slate-400 text-sm mt-6">
-          Nemáš účet?{' '}
-          <Link to="/signup" className="text-purple-600 dark:text-purple-400 hover:underline font-medium">
-            Registrovat se
-          </Link>
-        </p>
       </div>
     </div>
   )
