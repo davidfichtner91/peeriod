@@ -61,7 +61,7 @@ export function CycleRing({
   useEffect(() => {
     if (svgRef.current && builtLen === len) {
       for (let d = 1; d <= len; d++) {
-        const el = document.getElementById('seg' + d) as SVGPathElement
+        const el = document.getElementById('seg' + d) as any
         if (el) {
           const isSel = d === selectedDay
           el.setAttribute('stroke-width', isSel ? '21' : '13')
@@ -76,7 +76,7 @@ export function CycleRing({
         mark.setAttribute('transform', `translate(${mx} ${my}) rotate(${ang + 135})`)
       }
 
-      const focusRing = svgRef.current.getElementById('focusRing') as unknown as SVGCircleElement
+      const focusRing = svgRef.current.getElementById('focusRing') as any
       if (focusRing) {
         focusRing.style.opacity = document.activeElement === svgRef.current ? '1' : '0'
       }
