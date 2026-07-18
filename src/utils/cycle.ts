@@ -1,183 +1,143 @@
-export type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal'
+const DAY = 864e5;
+const MIN_LEN = 21;
+const MAX_LEN = 35;
 
 export interface CycleInfo {
-  phase: CyclePhase
-  dayOfCycle: number
-  phaseStartDay: number
-  phaseEndDay: number
-  percentThroughPhase: number
+  day: number;
+  len: number;
+  predicted: boolean;
 }
 
-export interface PhaseData {
-  name: string
-  color: string
-  emoji: string
-  dayRange: string
-  whatHappens: string
-  howSheFeel: string[]
-  tips: string[]
-  sexTips?: string[]
+export interface ContentInfo {
+  key: 'mens' | 'foli' | 'ovul' | 'lute';
+  phase: any;
+  stage: any;
+  feels: Array<[string, string]>;
+  from: number;
+  to: number;
 }
 
-export const PHASE_DATA: Record<CyclePhase, PhaseData> = {
-  menstrual: {
-    name: 'Menstruace',
-    color: 'bg-menstrual',
-    emoji: '🩸',
-    dayRange: '1–5',
-    whatHappens:
-      'Klesající estrogen a progesteron. Tělo se vyprazdňuje. Fyzická únava, někdy bolest. Hormonální nálada.',
-    howSheFeel: [
-      'Energeticky nižší',
-      'Občas depresivnější',
-      'Více potřebuje samotu',
-      'Bolest (různá intenzita)',
-    ],
-    tips: [
-      'Vyjádři empatii bez vědeckého vysvětlování',
-      'Neplánuj velké akce či rozhovory',
-      'Zeptej se: "Jak se cítíš? Co ti pomůže?"',
-      'Nabídni domácí pohodlí, teplo',
-      'Fyzická blízkost (ne sex) je OK, pokud ona chce',
-    ],
-  },
-  follicular: {
-    name: 'Folikulární',
-    color: 'bg-follicular',
-    emoji: '⚡',
-    dayRange: '6–13',
-    whatHappens:
-      'Rostoucí estrogen. Mozek je aktivní, tělo je silné. Sebevědomí roste. Energetický vzestup.',
-    howSheFeel: [
-      'Optimistická',
-      'Sociální',
-      'Motivovaná',
-      'Fyzicky silnější',
-      'Sebevědomá',
-    ],
-    tips: [
-      'Plánuj nové projekty, výzvy, dobrodružství',
-      'Podpoř její ambice a nápady',
-      'Sex/blízkost: její libido stoupá',
-      'Zvij ji na společenské akce',
-      'Jednoduše si užij její energii!',
-    ],
-  },
-  ovulation: {
-    name: 'Ovulace',
-    color: 'bg-ovulation',
-    emoji: '💥',
-    dayRange: '14–15',
-    whatHappens:
-      'Špička estrogenů, vrchol LH. Testosteron také mírně stoupá. Fyzická a mentální kondice na vrcholu. Nejvyšší sexuální přitažlivost.',
-    howSheFeel: [
-      'Nejpevnější',
-      'Nejsexy',
-      'Nejodvážnější',
-      'Nejcharismatičtější',
-      'Fyzicky nejsilnější',
-    ],
-    tips: [
-      'Nejlepší čas pro sex – máte oba nejvyšší libido',
-      'Urbi ji k něčemu fyzicky náročnému',
-      'Fyzická přitažlivost je oboustranná – užijte si to',
-      'Romantika + vášeň funguje teď nejlépe',
-      'Buď sebevědomý – ona tě teď vidí nejvíc atraktivního',
-    ],
-  },
-  luteal: {
-    name: 'Luteální',
-    color: 'bg-luteal',
-    emoji: '🌙',
-    dayRange: '16–28',
-    whatHappens:
-      'Progesteron stoupá. Usedlost, klidnost. Energie klesá. Někdy se objevuje napětí či dráždivost (PMS). Je to normální – není to o tobě!',
-    howSheFeel: [
-      'Méně sociální',
-      'Introvertní',
-      'Více emoční',
-      'Někdy dráždivá',
-      'Potřebuje více klidu',
-    ],
-    tips: [
-      'Vypořádej se s její "introvertností" – není to zaměřeno na tebe',
-      'Přijmi jejího prostor bez osobního orachu',
-      'Pokud je dráždivá: "Vidím, že máš složitý týden. Jak ti pomůžu?"',
-      'Fyzické cvičení a zde jí pomáhá – podpoř ji',
-      'Menší plány, větší pohodlí',
-    ],
-  },
+export interface PhaseBounds {
+  mens: [number, number];
+  foli: [number, number];
+  ovul: [number, number];
+  lute: [number, number];
 }
 
-export function calculateCycleInfo(
-  startDate: string | Date,
-  cycleLength: number,
-  referenceDate: string | Date = new Date()
-): CycleInfo {
-  const start = new Date(startDate)
-  const reference = new Date(referenceDate)
+const ORDER = ['mens', 'foli', 'ovul', 'lute'] as const;
 
-  // Dny od začátku
-  const diffTime = reference.getTime() - start.getTime()
-  const daysSinceStart = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-  // Zjisti který den cyklu (1-based)
-  const dayOfCycle = (daysSinceStart % cycleLength) + 1
-
-  // Fáze
-  let phase: CyclePhase
-  let phaseStartDay: number
-  let phaseEndDay: number
-
-  if (dayOfCycle <= 5) {
-    phase = 'menstrual'
-    phaseStartDay = 1
-    phaseEndDay = 5
-  } else if (dayOfCycle <= 13) {
-    phase = 'follicular'
-    phaseStartDay = 6
-    phaseEndDay = 13
-  } else if (dayOfCycle <= 15) {
-    phase = 'ovulation'
-    phaseStartDay = 14
-    phaseEndDay = 15
-  } else {
-    phase = 'luteal'
-    phaseStartDay = 16
-    phaseEndDay = cycleLength
-  }
-
-  const phaseDayRange = phaseEndDay - phaseStartDay + 1
-  const daysIntoPhase = dayOfCycle - phaseStartDay + 1
-  const percentThroughPhase = Math.round((daysIntoPhase / phaseDayRange) * 100)
-
+function bounds(len: number): PhaseBounds {
+  const ovul = Math.max(8, len - 14);
   return {
-    phase,
-    dayOfCycle,
-    phaseStartDay,
-    phaseEndDay,
-    percentThroughPhase,
+    mens: [1, 5],
+    foli: [6, ovul - 2],
+    ovul: [ovul - 1, ovul + 1],
+    lute: [ovul + 2, len],
+  };
+}
+
+function phaseOf(day: number, len: number): 'mens' | 'foli' | 'ovul' | 'lute' {
+  const b = bounds(len);
+  return (
+    (ORDER.find((k) => day >= b[k][0] && day <= b[k][1]) as any) || 'lute'
+  );
+}
+
+export function intervals(starts: Date[]): number[] {
+  const s = [...starts].sort((a, b) => a.getTime() - b.getTime());
+  const out: number[] = [];
+  for (let i = 1; i < s.length; i++) {
+    out.push(Math.round((s[i].getTime() - s[i - 1].getTime()) / DAY));
   }
+  return out;
 }
 
-export function getNextCycleStart(
-  startDate: string | Date,
-  cycleLength: number
-): Date {
-  const start = new Date(startDate)
-  const now = new Date()
-  const diffTime = now.getTime() - start.getTime()
-  const daysSinceStart = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-  const cyclesSinceStart = Math.floor(daysSinceStart / cycleLength)
-  const nextCycleStart = new Date(start)
-  nextCycleStart.setDate(start.getDate() + (cyclesSinceStart + 1) * cycleLength)
-  return nextCycleStart
+export function avgLen(starts: Date[]): number {
+  const usable = intervals(starts)
+    .filter((n) => n >= MIN_LEN && n <= MAX_LEN)
+    .slice(-6);
+  if (!usable.length) return 28;
+  return Math.round(usable.reduce((a, b) => a + b, 0) / usable.length);
 }
 
-export function getDaysUntilMenstruation(
-  startDate: string | Date,
-  cycleLength: number
-): number {
-  const info = calculateCycleInfo(startDate, cycleLength)
-  return cycleLength - info.dayOfCycle + 1
+function mid(date: Date): number {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  ).getTime();
+}
+
+export function cycleAt(
+  date: Date,
+  starts: Date[],
+  now: Date = new Date()
+): CycleInfo {
+  const s = [...starts].sort((a, b) => a.getTime() - b.getTime());
+  const t = mid(date);
+  const L = avgLen(starts);
+
+  for (let i = s.length - 1; i >= 0; i--) {
+    const st = mid(s[i]);
+    if (t >= st) {
+      const next = s[i + 1] ? mid(s[i + 1]) : null;
+      if (next && t < next) {
+        return {
+          day: Math.round((t - st) / DAY) + 1,
+          len: Math.round((next - st) / DAY),
+          predicted: false,
+        };
+      }
+      if (!next) {
+        const off = Math.round((t - st) / DAY);
+        return {
+          day: (off % L) + 1,
+          len: L,
+          predicted: t > mid(now),
+        };
+      }
+    }
+  }
+
+  const st = mid(s[0]);
+  const off = Math.round((t - st) / DAY);
+  return {
+    day: (((off % L) + L) % L) + 1,
+    len: L,
+    predicted: true,
+  };
+}
+
+export function contentFor(
+  day: number,
+  len: number,
+  PHASES: any,
+  FEELS: any
+): ContentInfo {
+  const key = phaseOf(day, len);
+  const p = PHASES[key];
+  const b = bounds(len)[key];
+  const span = Math.max(1, b[1] - b[0] + 1);
+  const prog = (day - b[0]) / span;
+  const idx = Math.min(
+    p.stages.length - 1,
+    Math.max(0, Math.floor(prog * p.stages.length))
+  );
+  const feels = (FEELS[key] && FEELS[key][idx]) || p.feels;
+  return {
+    key,
+    phase: p,
+    stage: p.stages[idx],
+    feels,
+    from: b[0],
+    to: b[1],
+  };
+}
+
+export function isOutlier(n: number): boolean {
+  return n < MIN_LEN || n > MAX_LEN;
+}
+
+export function isStart(date: Date, starts: Date[]): boolean {
+  return starts.some((s) => mid(s) === mid(date));
 }

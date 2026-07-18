@@ -2,63 +2,79 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { calculateCycleInfo, PHASE_DATA } from '../utils/cycle'
-import { Calendar } from './Calendar'
-import { PhaseDetail } from './PhaseDetail'
-import { Logo } from './Logo'
-
-interface Cycle {
-  id: string
-  start_date: string
-  cycle_length: number
-}
+import { cycleAt, contentFor } from '../utils/cycle'
+import { PHASES, FEELS } from '../data/phases'
+import { DashboardHeader } from './DashboardHeader'
+import { CycleRing } from './CycleRing'
+import { PhaseContent } from './PhaseContent'
+import { PeriodLog } from './PeriodLog'
+import { CalendarGrid } from './CalendarGrid'
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
-  const [cycle, setCycle] = useState<Cycle | null>(null)
+  const [starts, setStarts] = useState<Date[]>([])
+  const [partnerName, setPartnerName] = useState<string>()
+  const [selectedDay, setSelectedDay] = useState<number>(1)
   const [loading, setLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [now] = useState(new Date())
 
   useEffect(() => {
-    const fetchCycle = async () => {
+    const fetchData = async () => {
       if (!user) return
 
-      const { data, error } = await supabase
-        .from('cycles')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
+      const [startsRes, profileRes] = await Promise.all([
+        supabase
+          .from('period_starts')
+          .select('start_date')
+          .eq('user_id', user.id)
+          .order('start_date', { ascending: false }),
+        supabase
+          .from('profiles')
+          .select('partner_name')
+          .eq('id', user.id)
+          .single(),
+      ])
 
-      if (!error && data) {
-        setCycle(data)
+      if (startsRes.data?.length) {
+        setStarts(startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')))
+        const c = cycleAt(now, startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')), now)
+        setSelectedDay(c.day)
+      }
+
+      if (profileRes.data?.partner_name) {
+        setPartnerName(profileRes.data.partner_name)
       }
 
       setLoading(false)
     }
 
-    fetchCycle()
-  }, [user])
+    fetchData()
+  }, [user, now])
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--paper)' }}>
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-purple-200 dark:border-purple-800 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Načítám...</p>
+          <div className="w-12 h-12 border-4 border-line-2 border-t-ink rounded-full animate-spin mx-auto mb-4"></div>
+          <p style={{ color: 'var(--ink-2)' }}>Načítám...</p>
         </div>
       </div>
     )
   }
 
-  if (!cycle) {
+  if (!starts.length) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--paper)' }}>
         <div className="text-center">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">Nemáš noch žádný cyklus</p>
-          <a href="/onboarding" className="text-purple-600 hover:underline font-medium">
+          <p style={{ color: 'var(--ink-2)' }} className="mb-4">
+            Nemáš žádný cyklus
+          </p>
+          <a
+            href="/onboarding"
+            className="underline font-medium"
+            style={{ color: 'var(--ink)' }}
+          >
             Vytvořit cyklus
           </a>
         </div>
@@ -66,87 +82,145 @@ export function Dashboard() {
     )
   }
 
-  const cycleInfo = calculateCycleInfo(cycle.start_date, cycle.cycle_length)
-  const phaseData = PHASE_DATA[cycleInfo.phase]
+  const c = cycleAt(now, starts, now)
+  const content = contentFor(selectedDay, c.len, PHASES, FEELS)
+
+  const handleAddStart = async (date: Date) => {
+    if (!user) return
+    const dateStr = date.toISOString().slice(0, 10)
+    const { error } = await supabase.from('period_starts').insert({
+      user_id: user.id,
+      start_date: dateStr,
+    })
+    if (!error) {
+      setStarts([...starts, new Date(dateStr + 'T00:00:00')])
+    }
+  }
+
+  const handleDeleteStart = async (date: Date) => {
+    if (!user) return
+    const dateStr = date.toISOString().slice(0, 10)
+    await supabase
+      .from('period_starts')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('start_date', dateStr)
+    setStarts(starts.filter((s) => s.toISOString().slice(0, 10) !== dateStr))
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-950 dark:to-purple-950">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-3 hover:opacity-80 transition"
-          >
-            <Logo variant="gradient" size={40} />
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">PEERIOD</span>
-          </button>
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Ahoj, chlape!</h2>
-            <button
-              onClick={signOut}
-              className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition text-sm"
-            >
-              Odhlásit se
-            </button>
-          </div>
-        </div>
+    <div style={{ backgroundColor: 'var(--paper)', color: 'var(--ink)', minHeight: '100vh' }} className="font-body">
+      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 20px 72px' }}>
+        <DashboardHeader partnerName={partnerName} starts={starts} />
 
-        {/* Current phase card */}
-        <div
-          className={`${phaseData.color} rounded-lg shadow-lg p-6 mb-8 text-white`}
+        <section
+          style={{
+            background: 'var(--card)',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--r)',
+            padding: '26px 28px',
+            display: 'grid',
+            gridTemplateColumns: '210px 1fr',
+            gap: '34px',
+            alignItems: 'center',
+            marginTop: '20px',
+          }}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <div className="text-4xl mb-2">{phaseData.emoji}</div>
-              <h2 className="text-2xl font-bold mb-1">{phaseData.name}</h2>
-              <p className="text-white/80 text-sm">Den {cycleInfo.dayOfCycle} z {cycle.cycle_length}</p>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold">{cycleInfo.percentThroughPhase}%</div>
-              <p className="text-white/80 text-xs">Fáze</p>
-            </div>
+          <div>
+            <CycleRing
+              len={c.len}
+              selectedDay={selectedDay}
+              onDaySelect={setSelectedDay}
+              today={c.day}
+            />
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2">
-            <div
-              className="bg-white rounded-full h-2 transition-all duration-300"
-              style={{ width: `${cycleInfo.percentThroughPhase}%` }}
-            ></div>
+          <div>
+            <button
+              onClick={() => setSelectedDay(c.day)}
+              hidden={selectedDay === c.day}
+              className="bg-none border-0 px-0 py-0 font-body text-sm underline cursor-pointer"
+              style={{
+                color: 'var(--ink-2)',
+                textDecorationOffset: '3px',
+                marginBottom: '12px',
+              }}
+            >
+              ← Zpět na dnešek
+            </button>
+            <PhaseContent
+              title={content.stage.title}
+              lede={content.stage.lede}
+              tips={content.stage.tips}
+              feels={content.feels}
+              phaseKey={content.key}
+              animated={selectedDay !== c.day}
+            />
+          </div>
+        </section>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '20px',
+            marginTop: '20px',
+          }}
+        >
+          <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
+            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+              Co se děje v jejím těle
+            </h3>
+            <p style={{ margin: 0, color: 'var(--ink-2)', fontSize: '14px' }}>
+              {content.stage.bio}
+            </p>
+          </div>
+          <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
+            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+              Jak se může cítit
+            </h3>
+            <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', listStyle: 'none', margin: 0, padding: 0 }}>
+              {content.feels.map((feel, idx) => (
+                <li
+                  key={idx}
+                  style={{
+                    fontSize: '13px',
+                    border: '1px solid var(--line-2)',
+                    borderRadius: '999px',
+                    padding: '5px 12px',
+                    color: 'var(--ink-2)',
+                  }}
+                >
+                  {feel[0]}
+                  <i style={{ fontStyle: 'normal', color: 'var(--ink-3)', marginLeft: '6px', fontSize: '11px' }}>
+                    {feel[1]}
+                  </i>
+                </li>
+              ))}
+            </ul>
+            <p style={{ fontSize: '12.5px', color: 'var(--ink-3)', lineHeight: 1.55, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
+              Orientační, ne diagnóza. Každý cyklus je jiný — ptej se místo domýšlení.
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Calendar */}
-          <div className="lg:col-span-2">
-            <Calendar
-              startDate={cycle.start_date}
-              cycleLength={cycle.cycle_length}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-            />
-          </div>
+        <PeriodLog
+          starts={starts}
+          onAdd={handleAddStart}
+          onDelete={handleDeleteStart}
+          onToday={() => handleAddStart(new Date())}
+        />
 
-          {/* Phase detail */}
-          <div className="lg:col-span-1">
-            <PhaseDetail
-              phase={cycleInfo.phase}
-              dayOfCycle={cycleInfo.dayOfCycle}
-              selectedDate={selectedDate}
-              startDate={cycle.start_date}
-              cycleLength={cycle.cycle_length}
-            />
-          </div>
-        </div>
+        <CalendarGrid starts={starts} onDaySelect={setSelectedDay} now={now} />
 
-        {/* Settings link */}
-        <div className="mt-8 text-center">
-          <a
-            href="/settings"
-            className="text-purple-600 dark:text-purple-400 hover:underline text-sm font-medium"
+        <footer style={{ marginTop: '32px', fontSize: '12.5px', color: 'var(--ink-3)', textAlign: 'center' }}>
+          <button
+            onClick={signOut}
+            className="bg-none border-0 font-body text-sm cursor-pointer underline"
+            style={{ color: 'var(--ink-3)', textDecorationOffset: '3px' }}
           >
-            Upravit nastavení →
-          </a>
-        </div>
+            Odhlásit se
+          </button>
+        </footer>
       </div>
     </div>
   )
