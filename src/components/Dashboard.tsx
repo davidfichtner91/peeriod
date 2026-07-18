@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { cycleAt, contentFor } from '../utils/cycle'
@@ -151,7 +150,6 @@ export function Dashboard() {
               lede={content.stage.lede}
               tips={content.stage.tips}
               feels={content.feels}
-              phaseKey={content.key}
               animated={selectedDay !== c.day}
             />
           </div>

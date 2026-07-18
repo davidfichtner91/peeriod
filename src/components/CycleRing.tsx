@@ -17,7 +17,6 @@ export function CycleRing({
   const svgRef = useRef<SVGSVGElement>(null)
   const [dragging, setDragging] = useState(false)
   const [builtLen, setBuiltLen] = useState(0)
-  const focusId = useId()
 
   const R = 120
   const CX = 160
@@ -77,7 +76,7 @@ export function CycleRing({
         mark.setAttribute('transform', `translate(${mx} ${my}) rotate(${ang + 135})`)
       }
 
-      const focusRing = svgRef.current.getElementById('focusRing') as SVGCircleElement
+      const focusRing = svgRef.current.getElementById('focusRing') as any
       if (focusRing) {
         focusRing.style.opacity = document.activeElement === svgRef.current ? '1' : '0'
       }

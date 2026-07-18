@@ -109,7 +109,7 @@ export function Settings() {
           <a
             href="/dashboard"
             className="underline text-sm font-medium"
-            style={{ color: 'var(--ink-2)', textDecorationOffset: '3px' }}
+            style={{ color: 'var(--ink-2)', textDecoration: '3px' }}
           >
             ← Zpět na dashboard
           </a>
