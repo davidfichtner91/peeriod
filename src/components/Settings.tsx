@@ -232,7 +232,6 @@ export function Settings() {
                 color: 'var(--ink-3)',
                 fontSize: '14px',
                 textDecoration: 'underline',
-                textDecorationOffset: '3px',
               }}
             >
               Odhlásit se

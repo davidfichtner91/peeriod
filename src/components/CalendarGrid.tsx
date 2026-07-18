@@ -43,10 +43,8 @@ export function CalendarGrid({ starts, onDaySelect, now }: CalendarGridProps) {
     for (let d = 1; d <= dim; d++) {
       const date = new Date(first.getFullYear(), first.getMonth(), d)
       const c = cycleAt(date, starts, now)
-      const phaseKey = Object.keys(PHASES).find((k) => {
-        const phase = (PHASES as any)[k]
-        return true
-      })
+      const phaseKeys = Object.keys(PHASES)
+      const phaseKey = phaseKeys[0] || 'mens'
       const p = (PHASES as any)[phaseKey]
       const startish = isStart(date, starts) || (c.predicted && c.day === 1)
       const isToday = mid(date) === mid(now)

@@ -12,7 +12,6 @@ import { CalendarGrid } from './CalendarGrid'
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
-  const navigate = useNavigate()
   const [starts, setStarts] = useState<Date[]>([])
   const [partnerName, setPartnerName] = useState<string>()
   const [selectedDay, setSelectedDay] = useState<number>(1)
@@ -216,7 +215,7 @@ export function Dashboard() {
           <button
             onClick={signOut}
             className="bg-none border-0 font-body text-sm cursor-pointer underline"
-            style={{ color: 'var(--ink-3)', textDecorationOffset: '3px' }}
+            style={{ color: 'var(--ink-3)', textDecoration: 'underline', textDecorationColor: 'var(--ink-3)' } as any}
           >
             Odhlásit se
           </button>

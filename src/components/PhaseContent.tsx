@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react'
 
-interface Tip {
-  title: string
-  description: string
-}
-
 interface PhaseContentProps {
   title: string
   lede: string
   tips: [string, string][]
   feels: [string, string][]
-  phaseKey: string
   animated?: boolean
 }
 
@@ -19,7 +13,6 @@ export function PhaseContent({
   lede,
   tips,
   feels,
-  phaseKey,
   animated = false,
 }: PhaseContentProps) {
   const [showOut, setShowOut] = useState(false)

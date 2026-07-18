@@ -34,19 +34,18 @@ export function CycleRing({
   useEffect(() => {
     if (builtLen !== len && svgRef.current) {
       let s = ''
+      const phaseKeys = Object.keys(PHASES)
       for (let i = 0; i < len; i++) {
         const d = i + 1
-        const phaseKey = Object.keys(PHASES).find((k) => {
-          const phase = (PHASES as any)[k]
-          const [x0, y0] = pt(i * STEP + GAP / 2, R)
-          const [x1, y1] = pt((i + 1) * STEP - GAP / 2, R)
-          return true
-        }) as any
+        const phaseKeyIdx = i % phaseKeys.length
+        const phaseKey = phaseKeys[phaseKeyIdx]
         const phase = (PHASES as any)[phaseKey]
         const color = phase.color
 
-        const [x0, y0] = pt(i * STEP + GAP / 2, R)
-        const [x1, y1] = pt((i + 1) * STEP - GAP / 2, R)
+        const x0 = CX + R * Math.cos(((i * STEP + GAP / 2 - 90) * Math.PI) / 180)
+        const y0 = CY + R * Math.sin(((i * STEP + GAP / 2 - 90) * Math.PI) / 180)
+        const x1 = CX + R * Math.cos((((i + 1) * STEP - GAP / 2 - 90) * Math.PI) / 180)
+        const y1 = CY + R * Math.sin((((i + 1) * STEP - GAP / 2 - 90) * Math.PI) / 180)
         const dd = `M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1}`
 
         s += `<path class="hit" d="${dd}"><title>Den ${d}</title></path>`
@@ -91,7 +90,6 @@ export function CycleRing({
     const scale = 320 / rect.width
     const x = (clientX - rect.left) * scale - CX
     const y = (clientY - rect.top) * scale - CY
-    const dist = Math.hypot(x, y)
     const ang = (Math.atan2(y, x) * 180) / Math.PI + 90 + 360
     const ang360 = ang % 360
     return Math.min(len, Math.floor(ang360 / STEP) + 1)

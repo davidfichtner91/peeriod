@@ -130,7 +130,6 @@ export function PeriodLog({
               <button
                 onClick={() => onDelete(d)}
                 className="ml-auto bg-none border-0 text-ink-3 cursor-pointer font-body text-xs underline"
-                style={{ textDecorationOffset: '3px' }}
               >
                 Smazat
               </button>

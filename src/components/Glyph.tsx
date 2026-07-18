@@ -8,7 +8,7 @@ export function Glyph({ type, color, className = '' }: GlyphProps) {
   const baseProps = {
     className: `w-3 h-3 ${className}`,
     viewBox: '0 0 12 12',
-    'aria-hidden': 'true',
+    'aria-hidden': true as const,
   }
 
   switch (type) {
