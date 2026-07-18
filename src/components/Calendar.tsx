@@ -27,8 +27,7 @@ export function Calendar({
   const getDayPhaseColor = (day: number) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
     const cycleInfo = calculateCycleInfo(startDate, cycleLength, date)
-    const phase = cycleInfo.phase
-    const phaseData = PHASE_DATA[phase]
+    const phaseData = PHASE_DATA[cycleInfo.phase]
 
     // Extrahuj barvu z className
     const colorMap: Record<string, string> = {
@@ -40,7 +39,6 @@ export function Calendar({
 
     return {
       bgColor: colorMap[phaseData.color] || '#e0e7ff',
-      phase,
       dayOfCycle: cycleInfo.dayOfCycle,
     }
   }
@@ -101,7 +99,7 @@ export function Calendar({
             return <div key={`empty-${idx}`} className="aspect-square"></div>
           }
 
-          const { bgColor, phase } = getDayPhaseColor(day)
+          const { bgColor } = getDayPhaseColor(day)
           const isSelected =
             selectedDate &&
             selectedDate.getDate() === day &&

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { calculateCycleInfo, PHASE_DATA, type CyclePhase } from '../utils/cycle'
+import { calculateCycleInfo, PHASE_DATA } from '../utils/cycle'
 import { Calendar } from './Calendar'
 import { PhaseDetail } from './PhaseDetail'
 
