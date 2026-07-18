@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white dark:bg-slate-950 text-slate-900 dark:text-white;
+  }
+
+  input[type='date'],
+  input[type='email'],
+  input[type='password'],
+  input[type='text'],
+  textarea {
+    @apply bg-white dark:bg-slate-800;
+  }
+
+  input[type='range'] {
+    @apply cursor-pointer;
+  }
+}
