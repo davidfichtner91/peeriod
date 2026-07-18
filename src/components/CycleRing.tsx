@@ -1,4 +1,4 @@
-import { useId, useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { PHASES } from '../data/phases'
 
 interface CycleRingProps {
@@ -76,7 +76,7 @@ export function CycleRing({
         mark.setAttribute('transform', `translate(${mx} ${my}) rotate(${ang + 135})`)
       }
 
-      const focusRing = svgRef.current.getElementById('focusRing') as any
+      const focusRing = svgRef.current.getElementById('focusRing') as unknown as SVGCircleElement
       if (focusRing) {
         focusRing.style.opacity = document.activeElement === svgRef.current ? '1' : '0'
       }

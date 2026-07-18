@@ -139,7 +139,6 @@ export function Dashboard() {
               className="bg-none border-0 px-0 py-0 font-body text-sm underline cursor-pointer"
               style={{
                 color: 'var(--ink-2)',
-                textDecorationOffset: '3px',
                 marginBottom: '12px',
               }}
             >
