@@ -3,6 +3,7 @@
 
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  email text,
   partner_name text,
   created_at timestamptz default now()
 );
@@ -20,7 +21,7 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into profiles (id) values (new.id)
+  insert into profiles (id, email) values (new.id, new.email)
   on conflict (id) do nothing;
   return new;
 end;
@@ -32,6 +33,6 @@ create trigger on_auth_user_created
   for each row execute function handle_new_user();
 
 -- Doplnění profilů pro uživatele, kteří se registrovali dřív.
-insert into profiles (id)
-select id from auth.users
+insert into profiles (id, email)
+select id, email from auth.users
 on conflict (id) do nothing;
