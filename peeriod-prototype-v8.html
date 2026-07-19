@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="cs">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PEERIOD — prototyp v5</title>
+<title>Peeriod â€” prototyp v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -165,14 +165,14 @@ footer{margin-top:32px;font-size:12.5px;color:var(--ink-3);text-align:center}
           <circle cx="100" cy="100" r="36"/><path d="M125.5 74.5 L162 38"/><path d="M140 38 H162 V60"/><path d="M100 136 V178"/><path d="M78 160 H122"/>
         </g>
       </svg>
-      <h1>PEERIOD</h1>
+      <h1>Peeriod</h1>
     </div>
     <div style="display:flex;align-items:center;gap:16px">
-      <p class="who">Cyklus: <b>Míša</b> · <span id="whoLen"></span></p>
+      <p class="who">Cyklus: <b>MĂ­Ĺˇa</b> Â· <span id="whoLen"></span></p>
       <div class="themeswitch" role="radiogroup" aria-label="Motiv">
-        <button data-theme-set="light" aria-label="Světlý motiv">Světlý</button>
-        <button data-theme-set="auto" aria-label="Podle systému">Auto</button>
-        <button data-theme-set="dark" aria-label="Tmavý motiv">Tmavý</button>
+        <button data-theme-set="light" aria-label="SvÄ›tlĂ˝ motiv">SvÄ›tlĂ˝</button>
+        <button data-theme-set="auto" aria-label="Podle systĂ©mu">Auto</button>
+        <button data-theme-set="dark" aria-label="TmavĂ˝ motiv">TmavĂ˝</button>
       </div>
     </div>
   </div>
@@ -183,42 +183,42 @@ footer{margin-top:32px;font-size:12.5px;color:var(--ink-3);text-align:center}
       <svg viewBox="0 0 320 320" id="ring" tabindex="0" role="slider"
            aria-label="Den cyklu" aria-valuemin="1" aria-valuenow="1" aria-valuemax="28"></svg>
       <div class="hub">
-        <div class="d tnum" id="hubDay">–</div>
+        <div class="d tnum" id="hubDay">â€“</div>
         <div class="dl">den cyklu</div>
         <div class="ph" id="hubPhase"></div>
       </div>
     </div>
-    <p class="hint">Táhni po kruhu nebo klepni na den</p>
+    <p class="hint">TĂˇhni po kruhu nebo klepni na den</p>
     </div>
     <div>
-      <button class="back" id="backBtn" hidden>← Zpět na dnešek</button>
+      <button class="back" id="backBtn" hidden>â† ZpÄ›t na dneĹˇek</button>
       <p class="eyebrow" id="eyebrow">Dnes</p>
       <h2 id="title"></h2>
       <p class="lede" id="lede"></p>
-      <p class="eyebrow">Co dnes pomůže</p>
+      <p class="eyebrow">Co dnes pomĹŻĹľe</p>
       <ul class="tips" id="tips"></ul>
     </div>
   </section>
 
   <div class="cols">
     <div class="card">
-      <h3>Co se děje v jejím těle</h3>
+      <h3>Co se dÄ›je v jejĂ­m tÄ›le</h3>
       <p id="bio"></p>
     </div>
     <div class="card">
-      <h3>Jak se může cítit</h3>
+      <h3>Jak se mĹŻĹľe cĂ­tit</h3>
       <ul class="chips" id="feels"></ul>
-      <p class="note">Orientační, ne diagnóza. Každý cyklus je jiný — ptej se místo domýšlení.</p>
+      <p class="note">OrientaÄŤnĂ­, ne diagnĂłza. KaĹľdĂ˝ cyklus je jinĂ˝ â€” ptej se mĂ­sto domĂ˝ĹˇlenĂ­.</p>
     </div>
   </div>
 
   <div class="card" style="margin-top:20px">
-    <h3>Záznamy menstruace</h3>
-    <p class="note" style="margin:0 0 20px;padding-top:0;border-top:0">Každý zadaný začátek přepočítá předpověď. Průměr se počítá z posledních šesti cyklů v rozsahu 21–35 dní.</p>
+    <h3>ZĂˇznamy menstruace</h3>
+    <p class="note" style="margin:0 0 20px;padding-top:0;border-top:0">KaĹľdĂ˝ zadanĂ˝ zaÄŤĂˇtek pĹ™epoÄŤĂ­tĂˇ pĹ™edpovÄ›ÄŹ. PrĹŻmÄ›r se poÄŤĂ­tĂˇ z poslednĂ­ch Ĺˇesti cyklĹŻ v rozsahu 21â€“35 dnĂ­.</p>
     <div class="logbar">
       <input type="date" id="newDate">
-      <button class="btn" id="addBtn">Zaznamenat začátek</button>
-      <button class="btn ghost" id="todayBtn">Začalo dnes</button>
+      <button class="btn" id="addBtn">Zaznamenat zaÄŤĂˇtek</button>
+      <button class="btn ghost" id="todayBtn">ZaÄŤalo dnes</button>
     </div>
     <div class="stats" id="stats"></div>
     <ul class="log" id="log"></ul>
@@ -226,20 +226,20 @@ footer{margin-top:32px;font-size:12.5px;color:var(--ink-3);text-align:center}
 
   <div class="card" style="margin-top:20px">
     <div class="calhead">
-      <h3>Kalendář</h3>
+      <h3>KalendĂˇĹ™</h3>
       <ul class="legend" id="legend"></ul>
     </div>
     <div class="months" id="months"></div>
-    <p class="note">Plná políčka vycházejí ze zaznamenaných cyklů, čárkovaná jsou předpověď. Sytě vybarvený den je zaznamenaný začátek menstruace, čárkovaný rámeček bez výplně je předpokládaný začátek dalšího.</p>
+    <p class="note">PlnĂˇ polĂ­ÄŤka vychĂˇzejĂ­ ze zaznamenanĂ˝ch cyklĹŻ, ÄŤĂˇrkovanĂˇ jsou pĹ™edpovÄ›ÄŹ. SytÄ› vybarvenĂ˝ den je zaznamenanĂ˝ zaÄŤĂˇtek menstruace, ÄŤĂˇrkovanĂ˝ rĂˇmeÄŤek bez vĂ˝plnÄ› je pĹ™edpoklĂˇdanĂ˝ zaÄŤĂˇtek dalĹˇĂ­ho.</p>
   </div>
 
-  <footer>Prototyp — data jsou ukázková a drží se jen v paměti stránky</footer>
+  <footer>Prototyp â€” data jsou ukĂˇzkovĂˇ a drĹľĂ­ se jen v pamÄ›ti strĂˇnky</footer>
 </div>
 
 <script>
 const DAY = 864e5;
 const NOW = new Date(2026, 6, 19);
-const MONTHS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const MONTHS = ['Leden','Ăšnor','BĹ™ezen','Duben','KvÄ›ten','ÄŚerven','ÄŚervenec','Srpen','ZĂˇĹ™Ă­','ĹĂ­jen','Listopad','Prosinec'];
 const iso = d => d.toISOString().slice(0,10);
 const fmt = d => `${d.getDate()}. ${d.getMonth()+1}. ${d.getFullYear()}`;
 const mid = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -250,128 +250,128 @@ let starts = ['2026-04-11','2026-05-10','2026-06-06','2026-07-02'].map(s => new 
 
 const PHASES = {
   mens:{name:'Menstruace', color:'var(--p-mens)', glyph:'disc',
-    feels:[['Únava','častá'],['Křeče v podbřišku','častá'],['Citlivost na bolest','častá'],['Potřeba klidu','častá'],['Podrážděnost','občas']],
+    feels:[['Ăšnava','ÄŤastĂˇ'],['KĹ™eÄŤe v podbĹ™iĹˇku','ÄŤastĂˇ'],['Citlivost na bolest','ÄŤastĂˇ'],['PotĹ™eba klidu','ÄŤastĂˇ'],['PodrĂˇĹľdÄ›nost','obÄŤas']],
     stages:[
-      {title:'První dny jsou nejtěžší.',
-       lede:'Krvácení je nejsilnější a křeče nejvýraznější. Cokoliv, co dneska nemusí být, ať není.',
-       bio:'Estrogen i progesteron jsou na dně a děloha se stahuje, aby odplavila sliznici. Za křeče můžou prostaglandiny — stejné látky, které tělo používá při zánětu.',
-       tips:[['Nabídni teplo','Termofor nebo nahřívací polštářek na podbřišek uleví od stahů srovnatelně jako běžné analgetikum.'],
-             ['Vezmi na sebe provoz','Nákup, vaření, úklid. Bez ptaní a bez zmiňování, že jsi to vzal.'],
-             ['Zruš, co jde zrušit','Návštěvy a program navíc. Ostatní si toho nevšimnou, ona ano.'],['Blízkost bez očekávání','Objetí nebo masáž zad. Fyzický kontakt pomáhá nejvíc tehdy, když z něj nic dalšího neplyne.']]},
-      {title:'Nejhorší má za sebou.',
-       lede:'Křeče polevují, únava zůstává. Tělo teď dohání ztrátu železa, což je hlavní důvod, proč se pořád cítí vyčerpaně.',
-       bio:'Krvácení slábne, prostaglandiny klesají. Zásoby železa jsou ale nejnižší za celý cyklus a projeví se to na energii i na soustředění.',
-       tips:[['Uvař něco se železem','Červené maso, luštěniny, špenát. S vitamínem C se vstřebá výrazně líp.'],
-             ['Nabídni krátkou procházku','Lehký pohyb pomáhá, ale musí to být nabídka, ne návrh programu.'],
-             ['Nech tempo na ní','Někdo chce zpátky do běžného provozu hned, jiný ne. Ptej se.']]},
-      {title:'Energie se pomalu vrací.',
-       lede:'Menstruace končí a estrogen začíná stoupat. Dobrý moment na malý společný plán — ne ještě na velký.',
-       bio:'Hypofýza začíná uvolňovat FSH a v vaječnících se rozjíždí růst nových folikulů. S nimi stoupá estrogen a s ním nálada.',
-       tips:[['Naplánuj něco lehkého','Kino, večeře, procházka. Nic, co vyžaduje celodenní nasazení.'],
-             ['Ještě nespěchej s velkými tématy','Za pár dní na ně bude výrazně lepší půda.'],
-             ['Doplň spánek','Menstruace ho většinou pár nocí rozbila. Vytvoř na to prostor.']]}
+      {title:'PrvnĂ­ dny jsou nejtÄ›ĹľĹˇĂ­.',
+       lede:'KrvĂˇcenĂ­ je nejsilnÄ›jĹˇĂ­ a kĹ™eÄŤe nejvĂ˝raznÄ›jĹˇĂ­. Cokoliv, co dneska nemusĂ­ bĂ˝t, aĹĄ nenĂ­.',
+       bio:'Estrogen i progesteron jsou na dnÄ› a dÄ›loha se stahuje, aby odplavila sliznici. Za kĹ™eÄŤe mĹŻĹľou prostaglandiny â€” stejnĂ© lĂˇtky, kterĂ© tÄ›lo pouĹľĂ­vĂˇ pĹ™i zĂˇnÄ›tu.',
+       tips:[['NabĂ­dni teplo','Termofor nebo nahĹ™Ă­vacĂ­ polĹˇtĂˇĹ™ek na podbĹ™iĹˇek ulevĂ­ od stahĹŻ srovnatelnÄ› jako bÄ›ĹľnĂ© analgetikum.'],
+             ['Vezmi na sebe provoz','NĂˇkup, vaĹ™enĂ­, Ăşklid. Bez ptanĂ­ a bez zmiĹovĂˇnĂ­, Ĺľe jsi to vzal.'],
+             ['ZruĹˇ, co jde zruĹˇit','NĂˇvĹˇtÄ›vy a program navĂ­c. OstatnĂ­ si toho nevĹˇimnou, ona ano.'],['BlĂ­zkost bez oÄŤekĂˇvĂˇnĂ­','ObjetĂ­ nebo masĂˇĹľ zad. FyzickĂ˝ kontakt pomĂˇhĂˇ nejvĂ­c tehdy, kdyĹľ z nÄ›j nic dalĹˇĂ­ho neplyne.']]},
+      {title:'NejhorĹˇĂ­ mĂˇ za sebou.',
+       lede:'KĹ™eÄŤe polevujĂ­, Ăşnava zĹŻstĂˇvĂˇ. TÄ›lo teÄŹ dohĂˇnĂ­ ztrĂˇtu Ĺľeleza, coĹľ je hlavnĂ­ dĹŻvod, proÄŤ se poĹ™Ăˇd cĂ­tĂ­ vyÄŤerpanÄ›.',
+       bio:'KrvĂˇcenĂ­ slĂˇbne, prostaglandiny klesajĂ­. ZĂˇsoby Ĺľeleza jsou ale nejniĹľĹˇĂ­ za celĂ˝ cyklus a projevĂ­ se to na energii i na soustĹ™edÄ›nĂ­.',
+       tips:[['UvaĹ™ nÄ›co se Ĺľelezem','ÄŚervenĂ© maso, luĹˇtÄ›niny, ĹˇpenĂˇt. S vitamĂ­nem C se vstĹ™ebĂˇ vĂ˝raznÄ› lĂ­p.'],
+             ['NabĂ­dni krĂˇtkou prochĂˇzku','LehkĂ˝ pohyb pomĂˇhĂˇ, ale musĂ­ to bĂ˝t nabĂ­dka, ne nĂˇvrh programu.'],
+             ['Nech tempo na nĂ­','NÄ›kdo chce zpĂˇtky do bÄ›ĹľnĂ©ho provozu hned, jinĂ˝ ne. Ptej se.']]},
+      {title:'Energie se pomalu vracĂ­.',
+       lede:'Menstruace konÄŤĂ­ a estrogen zaÄŤĂ­nĂˇ stoupat. DobrĂ˝ moment na malĂ˝ spoleÄŤnĂ˝ plĂˇn â€” ne jeĹˇtÄ› na velkĂ˝.',
+       bio:'HypofĂ˝za zaÄŤĂ­nĂˇ uvolĹovat FSH a v vajeÄŤnĂ­cĂ­ch se rozjĂ­ĹľdĂ­ rĹŻst novĂ˝ch folikulĹŻ. S nimi stoupĂˇ estrogen a s nĂ­m nĂˇlada.',
+       tips:[['NaplĂˇnuj nÄ›co lehkĂ©ho','Kino, veÄŤeĹ™e, prochĂˇzka. Nic, co vyĹľaduje celodennĂ­ nasazenĂ­.'],
+             ['JeĹˇtÄ› nespÄ›chej s velkĂ˝mi tĂ©maty','Za pĂˇr dnĂ­ na nÄ› bude vĂ˝raznÄ› lepĹˇĂ­ pĹŻda.'],
+             ['DoplĹ spĂˇnek','Menstruace ho vÄ›tĹˇinou pĂˇr nocĂ­ rozbila. VytvoĹ™ na to prostor.']]}
     ]},
-  foli:{name:'Folikulární fáze', color:'var(--p-foli)', glyph:'ring',
-    feels:[['Rostoucí energie','častá'],['Lepší soustředění','častá'],['Chuť do nových věcí','častá'],['Lepší spánek','občas']],
+  foli:{name:'FolikulĂˇrnĂ­ fĂˇze', color:'var(--p-foli)', glyph:'ring',
+    feels:[['RostoucĂ­ energie','ÄŤastĂˇ'],['LepĹˇĂ­ soustĹ™edÄ›nĂ­','ÄŤastĂˇ'],['ChuĹĄ do novĂ˝ch vÄ›cĂ­','ÄŤastĂˇ'],['LepĹˇĂ­ spĂˇnek','obÄŤas']],
     stages:[
-      {title:'Energie je zpátky.',
-       lede:'Nejvýraznější obrat v celém cyklu. Co bylo před týdnem nad síly, je teď najednou v pohodě.',
-       bio:'Estrogen stoupá a s ním se zlepšuje regenerace, spánek i tolerance zátěže. Rostoucí folikuly zároveň obnovují děložní sliznici.',
-       tips:[['Vrať se ke společným plánům','Věci odložené kvůli menstruaci je teď dobrý čas obnovit.'],
-             ['Podpoř pohyb','Síla i výdrž jsou v téhle fázi znatelně vyšší než minulý týden.'],
-             ['Všimni si toho nahlas','Že je líp, si zaslouží komentář stejně jako když je zle.']]},
-      {title:'Nejlepší okno v celém cyklu.',
-       lede:'Vysoká energie, dobrá nálada, chuť do věcí. Pokud máš něco náročného k probrání nebo naplánování, teď.',
-       bio:'Estrogen se blíží vrcholu. Ovlivňuje i serotonin a dopamin, proto bývá tahle fáze subjektivně nejpříjemnější část cyklu.',
-       tips:[['Otevři odložená témata','Náročné rozhovory mají teď výrazně větší šanci dopadnout dobře.'],
-             ['Naplánuj něco většího','Výlet, návštěva, akce. Kapacita na to teď je.'],
-             ['Neber to jako samozřejmost','Dobré dny se přehlížejí nejsnáz ze všech.'],['Vrací se i chuť na blízkost','Libido stoupá spolu s estrogenem. Iniciativa bude teď přijatá líp než minulý týden.']]},
-      {title:'Před ovulací je na maximu.',
-       lede:'Poslední dny před ovulací bývají nejsilnější — energie, sebevědomí i chuť na lidi.',
-       bio:'Estrogen kulminuje a spouští vzestup luteinizačního hormonu, který za den až dva uvolní vajíčko. Roste i libido.',
-       tips:[['Využij to na společný čas','Otevřenost a chuť na podněty jsou teď nejvyšší.'],
-             ['Počítej s vyšším tempem','Může chtít stihnout víc, než je obvyklé. Nebrzdi to zbytečně.'],
-             ['Připrav se na obrat','Za pár dní přijde útlum. Není to nic, co bys způsobil.'],['Libido bývá na vrcholu','Zájem o sex je v těchto dnech nejvyšší v celém cyklu. Platí to oboustranně, ne automaticky.']]}
+      {title:'Energie je zpĂˇtky.',
+       lede:'NejvĂ˝raznÄ›jĹˇĂ­ obrat v celĂ©m cyklu. Co bylo pĹ™ed tĂ˝dnem nad sĂ­ly, je teÄŹ najednou v pohodÄ›.',
+       bio:'Estrogen stoupĂˇ a s nĂ­m se zlepĹˇuje regenerace, spĂˇnek i tolerance zĂˇtÄ›Ĺľe. RostoucĂ­ folikuly zĂˇroveĹ obnovujĂ­ dÄ›loĹľnĂ­ sliznici.',
+       tips:[['VraĹĄ se ke spoleÄŤnĂ˝m plĂˇnĹŻm','VÄ›ci odloĹľenĂ© kvĹŻli menstruaci je teÄŹ dobrĂ˝ ÄŤas obnovit.'],
+             ['PodpoĹ™ pohyb','SĂ­la i vĂ˝drĹľ jsou v tĂ©hle fĂˇzi znatelnÄ› vyĹˇĹˇĂ­ neĹľ minulĂ˝ tĂ˝den.'],
+             ['VĹˇimni si toho nahlas','Ĺ˝e je lĂ­p, si zaslouĹľĂ­ komentĂˇĹ™ stejnÄ› jako kdyĹľ je zle.']]},
+      {title:'NejlepĹˇĂ­ okno v celĂ©m cyklu.',
+       lede:'VysokĂˇ energie, dobrĂˇ nĂˇlada, chuĹĄ do vÄ›cĂ­. Pokud mĂˇĹˇ nÄ›co nĂˇroÄŤnĂ©ho k probrĂˇnĂ­ nebo naplĂˇnovĂˇnĂ­, teÄŹ.',
+       bio:'Estrogen se blĂ­ĹľĂ­ vrcholu. OvlivĹuje i serotonin a dopamin, proto bĂ˝vĂˇ tahle fĂˇze subjektivnÄ› nejpĹ™Ă­jemnÄ›jĹˇĂ­ ÄŤĂˇst cyklu.',
+       tips:[['OtevĹ™i odloĹľenĂˇ tĂ©mata','NĂˇroÄŤnĂ© rozhovory majĂ­ teÄŹ vĂ˝raznÄ› vÄ›tĹˇĂ­ Ĺˇanci dopadnout dobĹ™e.'],
+             ['NaplĂˇnuj nÄ›co vÄ›tĹˇĂ­ho','VĂ˝let, nĂˇvĹˇtÄ›va, akce. Kapacita na to teÄŹ je.'],
+             ['Neber to jako samozĹ™ejmost','DobrĂ© dny se pĹ™ehlĂ­ĹľejĂ­ nejsnĂˇz ze vĹˇech.'],['VracĂ­ se i chuĹĄ na blĂ­zkost','Libido stoupĂˇ spolu s estrogenem. Iniciativa bude teÄŹ pĹ™ijatĂˇ lĂ­p neĹľ minulĂ˝ tĂ˝den.']]},
+      {title:'PĹ™ed ovulacĂ­ je na maximu.',
+       lede:'PoslednĂ­ dny pĹ™ed ovulacĂ­ bĂ˝vajĂ­ nejsilnÄ›jĹˇĂ­ â€” energie, sebevÄ›domĂ­ i chuĹĄ na lidi.',
+       bio:'Estrogen kulminuje a spouĹˇtĂ­ vzestup luteinizaÄŤnĂ­ho hormonu, kterĂ˝ za den aĹľ dva uvolnĂ­ vajĂ­ÄŤko. Roste i libido.',
+       tips:[['VyuĹľij to na spoleÄŤnĂ˝ ÄŤas','OtevĹ™enost a chuĹĄ na podnÄ›ty jsou teÄŹ nejvyĹˇĹˇĂ­.'],
+             ['PoÄŤĂ­tej s vyĹˇĹˇĂ­m tempem','MĹŻĹľe chtĂ­t stihnout vĂ­c, neĹľ je obvyklĂ©. Nebrzdi to zbyteÄŤnÄ›.'],
+             ['PĹ™iprav se na obrat','Za pĂˇr dnĂ­ pĹ™ijde Ăştlum. NenĂ­ to nic, co bys zpĹŻsobil.'],['Libido bĂ˝vĂˇ na vrcholu','ZĂˇjem o sex je v tÄ›chto dnech nejvyĹˇĹˇĂ­ v celĂ©m cyklu. PlatĂ­ to oboustrannÄ›, ne automaticky.']]}
     ]},
   ovul:{name:'Ovulace', color:'var(--p-ovul)', glyph:'diamond',
-    feels:[['Vysoká energie','častá'],['Sebevědomí a otevřenost','častá'],['Jednostranná bolest','občas'],['Citlivější prsa','občas']],
+    feels:[['VysokĂˇ energie','ÄŤastĂˇ'],['SebevÄ›domĂ­ a otevĹ™enost','ÄŤastĂˇ'],['JednostrannĂˇ bolest','obÄŤas'],['CitlivÄ›jĹˇĂ­ prsa','obÄŤas']],
     stages:[
-      {title:'Ovulace se blíží.',
-       lede:'Den před vlastní ovulací. Vrchol energie a nejvyšší plodnost v celém cyklu.',
-       bio:'Luteinizační hormon prudce stoupá a spouští dozrání vajíčka. Hlen se mění, tělesná teplota je ještě před vzestupem.',
-       tips:[['Naplánuj společný večer','Chuť na blízkost i na lidi je teď nejvyšší.'],
-             ['Ber plodnost vážně','Tohle a následující dva dny jsou plodné okno, ať už ho chcete využít, nebo ne.'],
-             ['Nezahlcuj ji úkoly','Vysoká energie svádí naložit toho víc. Zůstane po ní útlum.']]},
+      {title:'Ovulace se blĂ­ĹľĂ­.',
+       lede:'Den pĹ™ed vlastnĂ­ ovulacĂ­. Vrchol energie a nejvyĹˇĹˇĂ­ plodnost v celĂ©m cyklu.',
+       bio:'LuteinizaÄŤnĂ­ hormon prudce stoupĂˇ a spouĹˇtĂ­ dozrĂˇnĂ­ vajĂ­ÄŤka. Hlen se mÄ›nĂ­, tÄ›lesnĂˇ teplota je jeĹˇtÄ› pĹ™ed vzestupem.',
+       tips:[['NaplĂˇnuj spoleÄŤnĂ˝ veÄŤer','ChuĹĄ na blĂ­zkost i na lidi je teÄŹ nejvyĹˇĹˇĂ­.'],
+             ['Ber plodnost vĂˇĹľnÄ›','Tohle a nĂˇsledujĂ­cĂ­ dva dny jsou plodnĂ© okno, aĹĄ uĹľ ho chcete vyuĹľĂ­t, nebo ne.'],
+             ['Nezahlcuj ji Ăşkoly','VysokĂˇ energie svĂˇdĂ­ naloĹľit toho vĂ­c. ZĹŻstane po nĂ­ Ăştlum.']]},
       {title:'Vrchol cyklu.',
-       lede:'Vajíčko se uvolňuje. U části žen to doprovází ostrá bolest na jedné straně podbřišku — a je to normální.',
-       bio:'Folikul praská a uvolňuje vajíčko, které putuje vejcovodem. Bolest má vlastní název, mittelschmerz, a trvá od pár hodin po jeden den.',
-       tips:[['Zaregistruj bolest','Krátká jednostranná bolest je běžná. Silná, dlouhá nebo s horečkou patří k lékaři.'],
-             ['Dej najevo ocenění','Pozornost sedne líp než kdykoli jindy — a nestojí nic.'],
-             ['Nech prostor na společný čas','Krátké okno, které se vrátí až za měsíc.'],['Plodné okno vrcholí','Pokud teď těhotenství neplánujete, spolehni se na antikoncepci, ne na počítání dní.']]},
-      {title:'Ovulace odeznívá.',
-       lede:'Nejvyšší bod je za vámi. Během několika dní se energie začne otáčet dolů, zatím ale nenápadně.',
-       bio:'Z prasklého folikulu se tvoří žluté tělísko a začíná produkovat progesteron. Tělesná teplota mírně stoupá a zůstane zvýšená až do menstruace.',
-       tips:[['Doraz rozjeté věci','Co jste načali v posledních dnech, teď je poslední dobrá chvíle dotáhnout.'],
-             ['Sleduj změnu tempa','Útlum přijde postupně. Když ho zaregistruješ včas, ušetříš si nedorozumění.'],
-             ['Nekomentuj pokles energie','„Ty už zase nemáš náladu“ je nejrychlejší cesta ke konfliktu.']]}
+       lede:'VajĂ­ÄŤko se uvolĹuje. U ÄŤĂˇsti Ĺľen to doprovĂˇzĂ­ ostrĂˇ bolest na jednĂ© stranÄ› podbĹ™iĹˇku â€” a je to normĂˇlnĂ­.',
+       bio:'Folikul praskĂˇ a uvolĹuje vajĂ­ÄŤko, kterĂ© putuje vejcovodem. Bolest mĂˇ vlastnĂ­ nĂˇzev, mittelschmerz, a trvĂˇ od pĂˇr hodin po jeden den.',
+       tips:[['Zaregistruj bolest','KrĂˇtkĂˇ jednostrannĂˇ bolest je bÄ›ĹľnĂˇ. SilnĂˇ, dlouhĂˇ nebo s horeÄŤkou patĹ™Ă­ k lĂ©kaĹ™i.'],
+             ['Dej najevo ocenÄ›nĂ­','Pozornost sedne lĂ­p neĹľ kdykoli jindy â€” a nestojĂ­ nic.'],
+             ['Nech prostor na spoleÄŤnĂ˝ ÄŤas','KrĂˇtkĂ© okno, kterĂ© se vrĂˇtĂ­ aĹľ za mÄ›sĂ­c.'],['PlodnĂ© okno vrcholĂ­','Pokud teÄŹ tÄ›hotenstvĂ­ neplĂˇnujete, spolehni se na antikoncepci, ne na poÄŤĂ­tĂˇnĂ­ dnĂ­.']]},
+      {title:'Ovulace odeznĂ­vĂˇ.',
+       lede:'NejvyĹˇĹˇĂ­ bod je za vĂˇmi. BÄ›hem nÄ›kolika dnĂ­ se energie zaÄŤne otĂˇÄŤet dolĹŻ, zatĂ­m ale nenĂˇpadnÄ›.',
+       bio:'Z prasklĂ©ho folikulu se tvoĹ™Ă­ ĹľlutĂ© tÄ›lĂ­sko a zaÄŤĂ­nĂˇ produkovat progesteron. TÄ›lesnĂˇ teplota mĂ­rnÄ› stoupĂˇ a zĹŻstane zvĂ˝ĹˇenĂˇ aĹľ do menstruace.',
+       tips:[['Doraz rozjetĂ© vÄ›ci','Co jste naÄŤali v poslednĂ­ch dnech, teÄŹ je poslednĂ­ dobrĂˇ chvĂ­le dotĂˇhnout.'],
+             ['Sleduj zmÄ›nu tempa','Ăštlum pĹ™ijde postupnÄ›. KdyĹľ ho zaregistrujeĹˇ vÄŤas, uĹˇetĹ™Ă­Ĺˇ si nedorozumÄ›nĂ­.'],
+             ['Nekomentuj pokles energie','â€žTy uĹľ zase nemĂˇĹˇ nĂˇladuâ€ś je nejrychlejĹˇĂ­ cesta ke konfliktu.']]}
     ]},
-  lute:{name:'Luteální fáze', color:'var(--p-lute)', glyph:'half',
-    feels:[['Únava','častá'],['Podrážděnost','častá'],['Nadýmání','častá'],['Chutě na sladké','častá'],['Úzkost nebo plačtivost','občas'],['Citlivá prsa','občas']],
+  lute:{name:'LuteĂˇlnĂ­ fĂˇze', color:'var(--p-lute)', glyph:'half',
+    feels:[['Ăšnava','ÄŤastĂˇ'],['PodrĂˇĹľdÄ›nost','ÄŤastĂˇ'],['NadĂ˝mĂˇnĂ­','ÄŤastĂˇ'],['ChutÄ› na sladkĂ©','ÄŤastĂˇ'],['Ăšzkost nebo plaÄŤtivost','obÄŤas'],['CitlivĂˇ prsa','obÄŤas']],
     stages:[
-      {title:'Klidná část cyklu.',
-       lede:'Progesteron tlumí a stabilizuje. Bývá to nejvyrovnanější období, i když už bez špičkové energie.',
-       bio:'Žluté tělísko produkuje progesteron, který působí uklidňujícím dojmem a zvyšuje tělesnou teplotu. Chuť k jídlu mírně roste.',
-       tips:[['Dobrý čas na běžný provoz','Rutina, domácí věci, klidný program. Nic extrémního ani jedním směrem.'],
-             ['Počítej s vyšší chutí k jídlu','Není to nedostatek vůle, ale vyšší energetický výdej v téhle fázi.'],
-             ['Naplánuj klidný víkend','Za týden na něj nemusí být nálada.'],['Zájem o sex obvykle klesá','Progesteron ho tlumí. Není to o tobě ani o vztahu.']]},
+      {title:'KlidnĂˇ ÄŤĂˇst cyklu.',
+       lede:'Progesteron tlumĂ­ a stabilizuje. BĂ˝vĂˇ to nejvyrovnanÄ›jĹˇĂ­ obdobĂ­, i kdyĹľ uĹľ bez ĹˇpiÄŤkovĂ© energie.',
+       bio:'Ĺ˝lutĂ© tÄ›lĂ­sko produkuje progesteron, kterĂ˝ pĹŻsobĂ­ uklidĹujĂ­cĂ­m dojmem a zvyĹˇuje tÄ›lesnou teplotu. ChuĹĄ k jĂ­dlu mĂ­rnÄ› roste.',
+       tips:[['DobrĂ˝ ÄŤas na bÄ›ĹľnĂ˝ provoz','Rutina, domĂˇcĂ­ vÄ›ci, klidnĂ˝ program. Nic extrĂ©mnĂ­ho ani jednĂ­m smÄ›rem.'],
+             ['PoÄŤĂ­tej s vyĹˇĹˇĂ­ chutĂ­ k jĂ­dlu','NenĂ­ to nedostatek vĹŻle, ale vyĹˇĹˇĂ­ energetickĂ˝ vĂ˝dej v tĂ©hle fĂˇzi.'],
+             ['NaplĂˇnuj klidnĂ˝ vĂ­kend','Za tĂ˝den na nÄ›j nemusĂ­ bĂ˝t nĂˇlada.'],['ZĂˇjem o sex obvykle klesĂˇ','Progesteron ho tlumĂ­. NenĂ­ to o tobÄ› ani o vztahu.']]},
       {title:'Tempo se zpomaluje.',
-       lede:'Energie klesá a únava přichází dřív. Ještě to není PMS, ale směr je jasný.',
-       bio:'Progesteron je na vrcholu, zpomaluje trávení a zadržuje vodu. Odtud nadýmání a pocit těžkosti.',
-       tips:[['Zkrať program','Odpolední a večerní kapacita je nižší, než na jakou jste zvyklí.'],
-             ['Uber sůl','Zadržování vody se tím výrazně zhoršuje. Platí to i pro tebe.'],
-             ['Nesjednávej velká rozhodnutí','Za pár dní by se to muselo řešit znovu.']]},
-      {title:'Neber výkyvy osobně.',
-       lede:'Progesteron prudce klesá a s ním serotonin. Tady vzniká většina zbytečných konfliktů v celém cyklu.',
-       bio:'Pokles progesteronu i estrogenu stahuje s sebou serotonin. Výsledkem jsou výkyvy nálad, úzkost a zvýšená citlivost na podněty — fyziologie, ne postoj.',
-       tips:[['Nediskutuj o náladě','Věta „ty seš zas nějaká“ situaci vždycky zhorší. Zeptej se, co potřebuje.'],
-             ['Ulehči rozhodování','Vyber večeři, film, program. Rozhodovací únava je teď výrazně vyšší.'],
-             ['Neber si to osobně','Podrážděnost tentokrát opravdu nemá adresáta.'],['Nabídni blízkost místo sexu','Držení, masáž, být prostě vedle. Tlak na víc teď spolehlivě uškodí.']]},
-      {title:'Poslední dny před menstruací.',
-       lede:'Nejcitlivější část cyklu. Za jeden až tři dny začne menstruace a s ní úleva.',
-       bio:'Hormony jsou na minimu, sliznice se připravuje k odloučení. Bolest hlavy, citlivá prsa a plačtivost patří k nejčastějším projevům.',
-       tips:[['Připrav se dopředu','Termofor, léky proti bolesti, oblíbené jídlo. Mít to po ruce znamená, že o to nemusí žádat.'],
-             ['Nabídni klid, ne řešení','Většinou nechce, abys to spravil. Chce, abys u toho byl.'],
-             ['Odlož všechno nepodstatné','Za pár dní se cyklus otočí a bude to snazší.']]}
+       lede:'Energie klesĂˇ a Ăşnava pĹ™ichĂˇzĂ­ dĹ™Ă­v. JeĹˇtÄ› to nenĂ­ PMS, ale smÄ›r je jasnĂ˝.',
+       bio:'Progesteron je na vrcholu, zpomaluje trĂˇvenĂ­ a zadrĹľuje vodu. Odtud nadĂ˝mĂˇnĂ­ a pocit tÄ›Ĺľkosti.',
+       tips:[['ZkraĹĄ program','OdpolednĂ­ a veÄŤernĂ­ kapacita je niĹľĹˇĂ­, neĹľ na jakou jste zvyklĂ­.'],
+             ['Uber sĹŻl','ZadrĹľovĂˇnĂ­ vody se tĂ­m vĂ˝raznÄ› zhorĹˇuje. PlatĂ­ to i pro tebe.'],
+             ['NesjednĂˇvej velkĂˇ rozhodnutĂ­','Za pĂˇr dnĂ­ by se to muselo Ĺ™eĹˇit znovu.']]},
+      {title:'Neber vĂ˝kyvy osobnÄ›.',
+       lede:'Progesteron prudce klesĂˇ a s nĂ­m serotonin. Tady vznikĂˇ vÄ›tĹˇina zbyteÄŤnĂ˝ch konfliktĹŻ v celĂ©m cyklu.',
+       bio:'Pokles progesteronu i estrogenu stahuje s sebou serotonin. VĂ˝sledkem jsou vĂ˝kyvy nĂˇlad, Ăşzkost a zvĂ˝ĹˇenĂˇ citlivost na podnÄ›ty â€” fyziologie, ne postoj.',
+       tips:[['Nediskutuj o nĂˇladÄ›','VÄ›ta â€žty seĹˇ zas nÄ›jakĂˇâ€ś situaci vĹľdycky zhorĹˇĂ­. Zeptej se, co potĹ™ebuje.'],
+             ['UlehÄŤi rozhodovĂˇnĂ­','Vyber veÄŤeĹ™i, film, program. RozhodovacĂ­ Ăşnava je teÄŹ vĂ˝raznÄ› vyĹˇĹˇĂ­.'],
+             ['Neber si to osobnÄ›','PodrĂˇĹľdÄ›nost tentokrĂˇt opravdu nemĂˇ adresĂˇta.'],['NabĂ­dni blĂ­zkost mĂ­sto sexu','DrĹľenĂ­, masĂˇĹľ, bĂ˝t prostÄ› vedle. Tlak na vĂ­c teÄŹ spolehlivÄ› uĹˇkodĂ­.']]},
+      {title:'PoslednĂ­ dny pĹ™ed menstruacĂ­.',
+       lede:'NejcitlivÄ›jĹˇĂ­ ÄŤĂˇst cyklu. Za jeden aĹľ tĹ™i dny zaÄŤne menstruace a s nĂ­ Ăşleva.',
+       bio:'Hormony jsou na minimu, sliznice se pĹ™ipravuje k odlouÄŤenĂ­. Bolest hlavy, citlivĂˇ prsa a plaÄŤtivost patĹ™Ă­ k nejÄŤastÄ›jĹˇĂ­m projevĹŻm.',
+       tips:[['PĹ™iprav se dopĹ™edu','Termofor, lĂ©ky proti bolesti, oblĂ­benĂ© jĂ­dlo. MĂ­t to po ruce znamenĂˇ, Ĺľe o to nemusĂ­ ĹľĂˇdat.'],
+             ['NabĂ­dni klid, ne Ĺ™eĹˇenĂ­','VÄ›tĹˇinou nechce, abys to spravil. Chce, abys u toho byl.'],
+             ['OdloĹľ vĹˇechno nepodstatnĂ©','Za pĂˇr dnĂ­ se cyklus otoÄŤĂ­ a bude to snazĹˇĂ­.']]}
     ]}
 };
 const ORDER = ['mens','foli','ovul','lute'];
 
-/* symptomy po podfázích — index odpovídá pořadí ve stages */
+/* symptomy po podfĂˇzĂ­ch â€” index odpovĂ­dĂˇ poĹ™adĂ­ ve stages */
 const FEELS = {
   mens:[
-    [['Silné krvácení','častá'],['Křeče v podbřišku','častá'],['Únava','častá'],['Citlivost na bolest','častá'],['Potřeba klidu','častá']],
-    [['Slábnoucí krvácení','častá'],['Únava','častá'],['Bolest zad','občas'],['Podrážděnost','občas']],
-    [['Doznívající únava','častá'],['Vracející se energie','častá'],['Úleva','častá']]
+    [['SilnĂ© krvĂˇcenĂ­','ÄŤastĂˇ'],['KĹ™eÄŤe v podbĹ™iĹˇku','ÄŤastĂˇ'],['Ăšnava','ÄŤastĂˇ'],['Citlivost na bolest','ÄŤastĂˇ'],['PotĹ™eba klidu','ÄŤastĂˇ']],
+    [['SlĂˇbnoucĂ­ krvĂˇcenĂ­','ÄŤastĂˇ'],['Ăšnava','ÄŤastĂˇ'],['Bolest zad','obÄŤas'],['PodrĂˇĹľdÄ›nost','obÄŤas']],
+    [['DoznĂ­vajĂ­cĂ­ Ăşnava','ÄŤastĂˇ'],['VracejĂ­cĂ­ se energie','ÄŤastĂˇ'],['Ăšleva','ÄŤastĂˇ']]
   ],
   foli:[
-    [['Rostoucí energie','častá'],['Lepší nálada','častá'],['Lepší spánek','častá']],
-    [['Vysoká energie','častá'],['Dobré soustředění','častá'],['Chuť do nových věcí','častá'],['Vyšší výdrž','občas']],
-    [['Špičková energie','častá'],['Sebevědomí','častá'],['Vyšší libido','častá'],['Citlivější prsa','občas']]
+    [['RostoucĂ­ energie','ÄŤastĂˇ'],['LepĹˇĂ­ nĂˇlada','ÄŤastĂˇ'],['LepĹˇĂ­ spĂˇnek','ÄŤastĂˇ']],
+    [['VysokĂˇ energie','ÄŤastĂˇ'],['DobrĂ© soustĹ™edÄ›nĂ­','ÄŤastĂˇ'],['ChuĹĄ do novĂ˝ch vÄ›cĂ­','ÄŤastĂˇ'],['VyĹˇĹˇĂ­ vĂ˝drĹľ','obÄŤas']],
+    [['Ĺ piÄŤkovĂˇ energie','ÄŤastĂˇ'],['SebevÄ›domĂ­','ÄŤastĂˇ'],['VyĹˇĹˇĂ­ libido','ÄŤastĂˇ'],['CitlivÄ›jĹˇĂ­ prsa','obÄŤas']]
   ],
   ovul:[
-    [['Vysoká energie','častá'],['Vyšší libido','častá'],['Otevřenost a upovídanost','častá']],
-    [['Jednostranná bolest','občas'],['Vysoká energie','častá'],['Citlivější prsa','občas'],['Vyšší tělesná teplota','častá']],
-    [['Doznívající energie','častá'],['Citlivější prsa','občas'],['Lehký útlum','občas']]
+    [['VysokĂˇ energie','ÄŤastĂˇ'],['VyĹˇĹˇĂ­ libido','ÄŤastĂˇ'],['OtevĹ™enost a upovĂ­danost','ÄŤastĂˇ']],
+    [['JednostrannĂˇ bolest','obÄŤas'],['VysokĂˇ energie','ÄŤastĂˇ'],['CitlivÄ›jĹˇĂ­ prsa','obÄŤas'],['VyĹˇĹˇĂ­ tÄ›lesnĂˇ teplota','ÄŤastĂˇ']],
+    [['DoznĂ­vajĂ­cĂ­ energie','ÄŤastĂˇ'],['CitlivÄ›jĹˇĂ­ prsa','obÄŤas'],['LehkĂ˝ Ăştlum','obÄŤas']]
   ],
   lute:[
-    [['Vyrovnaná nálada','častá'],['Klidnější tempo','častá'],['Vyšší chuť k jídlu','častá']],
-    [['Únava','častá'],['Nadýmání','častá'],['Chutě na sladké','častá'],['Nižší výdrž','častá']],
-    [['Podrážděnost','častá'],['Výkyvy nálad','častá'],['Úzkost','občas'],['Zhoršený spánek','občas'],['Chutě na sladké','častá']],
-    [['Citlivá prsa','častá'],['Bolest hlavy','občas'],['Plačtivost','občas'],['Podrážděnost','častá'],['Zadržování vody','častá']]
+    [['VyrovnanĂˇ nĂˇlada','ÄŤastĂˇ'],['KlidnÄ›jĹˇĂ­ tempo','ÄŤastĂˇ'],['VyĹˇĹˇĂ­ chuĹĄ k jĂ­dlu','ÄŤastĂˇ']],
+    [['Ăšnava','ÄŤastĂˇ'],['NadĂ˝mĂˇnĂ­','ÄŤastĂˇ'],['ChutÄ› na sladkĂ©','ÄŤastĂˇ'],['NiĹľĹˇĂ­ vĂ˝drĹľ','ÄŤastĂˇ']],
+    [['PodrĂˇĹľdÄ›nost','ÄŤastĂˇ'],['VĂ˝kyvy nĂˇlad','ÄŤastĂˇ'],['Ăšzkost','obÄŤas'],['ZhorĹˇenĂ˝ spĂˇnek','obÄŤas'],['ChutÄ› na sladkĂ©','ÄŤastĂˇ']],
+    [['CitlivĂˇ prsa','ÄŤastĂˇ'],['Bolest hlavy','obÄŤas'],['PlaÄŤtivost','obÄŤas'],['PodrĂˇĹľdÄ›nost','ÄŤastĂˇ'],['ZadrĹľovĂˇnĂ­ vody','ÄŤastĂˇ']]
   ]
 };
 
-/* luteální fáze trvá stabilně ~14 dní, proto se ovulace kotví od konce cyklu */
+/* luteĂˇlnĂ­ fĂˇze trvĂˇ stabilnÄ› ~14 dnĂ­, proto se ovulace kotvĂ­ od konce cyklu */
 function bounds(len){
   const ovul = Math.max(8, len - 14);
   return { mens:[1,5], foli:[6, ovul-2], ovul:[ovul-1, ovul+1], lute:[ovul+2, len] };
@@ -380,7 +380,7 @@ function phaseOf(day, len){
   const b = bounds(len);
   return ORDER.find(k => day >= b[k][0] && day <= b[k][1]) || 'lute';
 }
-/* vybere fázi i její podfázi podle pozice ve fázi — texty se tak liší den ode dne */
+/* vybere fĂˇzi i jejĂ­ podfĂˇzi podle pozice ve fĂˇzi â€” texty se tak liĹˇĂ­ den ode dne */
 function contentFor(day, len){
   const key = phaseOf(day, len), p = PHASES[key], b = bounds(len)[key];
   const span = Math.max(1, b[1] - b[0] + 1);
@@ -426,7 +426,7 @@ function glyph(kind, color){
   return `<svg ${o}><circle cx="6" cy="6" r="4" fill="none" ${c} stroke-width="2.4"/><path d="M6 1.6A4.4 4.4 0 0 1 6 10.4Z" ${c}/></svg>`;
 }
 
-/* ---------- ring: postaví se jednou, pak už se jen mění atributy ---------- */
+/* ---------- ring: postavĂ­ se jednou, pak uĹľ se jen mÄ›nĂ­ atributy ---------- */
 const R = 120, CX = 160, CY = 160, GAP = 2.6;
 const pt = (a, r) => [CX + r*Math.cos((a-90)*Math.PI/180), CY + r*Math.sin((a-90)*Math.PI/180)];
 let ringLen = null;
@@ -438,7 +438,7 @@ function buildRing(len){
     const d = i+1, p = PHASES[phaseOf(d, len)];
     const [x0,y0] = pt(i*STEP + GAP/2, R), [x1,y1] = pt((i+1)*STEP - GAP/2, R);
     const dd = `M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1}`;
-    s += `<path class="hit" d="${dd}"><title>Den ${d} — ${p.name}</title></path>`;
+    s += `<path class="hit" d="${dd}"><title>Den ${d} â€” ${p.name}</title></path>`;
     s += `<path class="seg" id="seg${d}" d="${dd}" fill="none" stroke="${p.color}" stroke-width="13" stroke-linecap="round"/>`;
   }
   s += `<circle id="focusRing" cx="${CX}" cy="${CY}" r="${R+26}" fill="none"
@@ -478,11 +478,11 @@ function drawMonths(){
       const startish = isStart(date) || (c.predicted && c.day === 1);
       const cls = ['cell', c.predicted ? 'pred':'', mid(date) === mid(NOW) ? 'today':'', startish ? 'start':''].join(' ');
       cells += `<button class="${cls}" style="--c:${p.color}" data-day="${c.day}"
-        aria-label="${d}. ${MONTHS[first.getMonth()].toLowerCase()}, den ${c.day} — ${p.name}${c.predicted ? ', předpověď':''}">
+        aria-label="${d}. ${MONTHS[first.getMonth()].toLowerCase()}, den ${c.day} â€” ${p.name}${c.predicted ? ', pĹ™edpovÄ›ÄŹ':''}">
         ${glyph(p.glyph, p.color)}<span class="num">${d}</span></button>`;
     }
     out += `<div class="month"><h4>${MONTHS[first.getMonth()]} ${first.getFullYear()}</h4>
-      <div class="dow"><span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span></div>
+      <div class="dow"><span>Po</span><span>Ăšt</span><span>St</span><span>ÄŚt</span><span>PĂˇ</span><span>So</span><span>Ne</span></div>
       <div class="grid">${cells}</div></div>`;
   }
   document.getElementById('months').innerHTML = out;
@@ -493,20 +493,20 @@ function drawLog(){
   const s = [...starts].sort((a,b) => b-a);
   document.getElementById('log').innerHTML = s.map((d, i) => {
     const prev = s[i+1];
-    if (!prev) return `<li><time>${fmt(d)}</time><span class="len">první záznam</span>
+    if (!prev) return `<li><time>${fmt(d)}</time><span class="len">prvnĂ­ zĂˇznam</span>
       <button class="del" data-del="${iso(d)}">Smazat</button></li>`;
     const n = Math.round((mid(d)-mid(prev))/DAY);
-    const flag = isOutlier(n) ? `<span class="flag" title="Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá">mimo průměr</span>` : '';
-    return `<li><time>${fmt(d)}</time><span class="len">cyklus ${n} dní</span>${flag}
+    const flag = isOutlier(n) ? `<span class="flag" title="Mimo rozsah ${MIN_LEN}â€“${MAX_LEN} dnĂ­, do prĹŻmÄ›ru se nepoÄŤĂ­tĂˇ">mimo prĹŻmÄ›r</span>` : '';
+    return `<li><time>${fmt(d)}</time><span class="len">cyklus ${n} dnĂ­</span>${flag}
       <button class="del" data-del="${iso(d)}">Smazat</button></li>`;
   }).join('');
   const iv = intervals(), used = iv.filter(n => !isOutlier(n)), skipped = iv.length - used.length;
-  const spread = used.length > 1 ? `${Math.min(...used)}–${Math.max(...used)}` : '—';
+  const spread = used.length > 1 ? `${Math.min(...used)}â€“${Math.max(...used)}` : 'â€”';
   document.getElementById('stats').innerHTML = `
-    <div class="stat"><b class="tnum">${avgLen()}</b><span>průměrná délka</span></div>
-    <div class="stat"><b class="tnum">${spread}</b><span>rozptyl (dní)</span></div>
-    <div class="stat"><b class="tnum">${starts.length}</b><span>záznamů</span></div>
-    ${skipped ? `<div class="stat"><b class="tnum">${skipped}</b><span>mimo průměr</span></div>` : ''}`;
+    <div class="stat"><b class="tnum">${avgLen()}</b><span>prĹŻmÄ›rnĂˇ dĂ©lka</span></div>
+    <div class="stat"><b class="tnum">${spread}</b><span>rozptyl (dnĂ­)</span></div>
+    <div class="stat"><b class="tnum">${starts.length}</b><span>zĂˇznamĹŻ</span></div>
+    ${skipped ? `<div class="stat"><b class="tnum">${skipped}</b><span>mimo prĹŻmÄ›r</span></div>` : ''}`;
 }
 
 /* ---------- render ---------- */
@@ -520,7 +520,7 @@ function paintContent(){
   document.getElementById('hubDay').textContent = sel;
   document.getElementById('hubPhase').innerHTML = glyph(p.glyph, p.color) + p.name;
   document.getElementById('eyebrow').textContent =
-    sel === cur.day ? `Dnes · ${p.name}` : `Den ${sel} · ${p.name} (${c.from}.–${c.to}. den)`;
+    sel === cur.day ? `Dnes Â· ${p.name}` : `Den ${sel} Â· ${p.name} (${c.from}.â€“${c.to}. den)`;
   document.getElementById('title').textContent = c.stage.title;
   document.getElementById('lede').textContent = c.stage.lede;
   document.getElementById('bio').textContent = c.stage.bio;
@@ -537,7 +537,7 @@ function render(animate, light){
   ringEl2.setAttribute('aria-valuemax', len);
   ringEl2.setAttribute('aria-valuenow', sel);
   ringEl2.setAttribute('aria-valuetext', `Den ${sel} z ${len}`);
-  document.getElementById('whoLen').textContent = `průměr ${avgLen()} dní`;
+  document.getElementById('whoLen').textContent = `prĹŻmÄ›r ${avgLen()} dnĂ­`;
   document.getElementById('backBtn').hidden = sel === cur.day;
 
   if (!animate || reduceMotion) return paintContent();
@@ -562,7 +562,7 @@ document.getElementById('legend').innerHTML = ORDER
 document.getElementById('newDate').value = iso(NOW);
 document.getElementById('addBtn').onclick = () => addStart(new Date(document.getElementById('newDate').value + 'T00:00:00'));
 document.getElementById('todayBtn').onclick = () => addStart(new Date(NOW));
-/* ---------- ovládání kruhu: tažení, klepnutí, klávesnice ---------- */
+/* ---------- ovlĂˇdĂˇnĂ­ kruhu: taĹľenĂ­, klepnutĂ­, klĂˇvesnice ---------- */
 function dayFromPoint(clientX, clientY, len){
   const svg = document.getElementById('ring'), r = svg.getBoundingClientRect();
   const scale = 320 / r.width;
@@ -584,7 +584,7 @@ let dragging = false;
 ringEl.addEventListener('pointerdown', e => {
   const len = cycleAt(NOW).len;
   const { day, dist } = dayFromPoint(e.clientX, e.clientY, len);
-  if (dist < R - 34 || dist > R + 34) return;      /* střed a okolí nechávají stránku scrollovat */
+  if (dist < R - 34 || dist > R + 34) return;      /* stĹ™ed a okolĂ­ nechĂˇvajĂ­ strĂˇnku scrollovat */
   dragging = true;
   ringEl.classList.add('dragging');
   ringEl.setPointerCapture(e.pointerId);
@@ -601,7 +601,7 @@ const endDrag = e => {
   dragging = false;
   ringEl.classList.remove('dragging');
   try { ringEl.releasePointerCapture(e.pointerId); } catch {}
-  render(false, false);                            /* dopočítá kalendář a záznamy až po tažení */
+  render(false, false);                            /* dopoÄŤĂ­tĂˇ kalendĂˇĹ™ a zĂˇznamy aĹľ po taĹľenĂ­ */
 };
 ringEl.addEventListener('pointerup', endDrag);
 ringEl.addEventListener('pointercancel', endDrag);
@@ -624,15 +624,16 @@ function applyTheme(mode){
   else document.documentElement.setAttribute('data-theme', mode);
   document.querySelectorAll('[data-theme-set]').forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.themeSet === mode));
-  try { localStorage.setItem('peeriod-theme', mode); } catch {}
+  try { localStorage.setItem('Peeriod-theme', mode); } catch {}
 }
 document.querySelectorAll('[data-theme-set]').forEach(b =>
   b.onclick = () => applyTheme(b.dataset.themeSet));
 let savedTheme = 'auto';
-try { savedTheme = localStorage.getItem('peeriod-theme') || 'auto'; } catch {}
+try { savedTheme = localStorage.getItem('Peeriod-theme') || 'auto'; } catch {}
 applyTheme(savedTheme);
 
 render();
 </script>
 </body>
 </html>
+

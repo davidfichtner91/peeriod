@@ -16,7 +16,7 @@ export function DashboardHeader({ partnerName, starts }: DashboardHeaderProps) {
       <div className="flex items-center gap-2.75">
         <Logo variant="gradient" size={34} />
         <h1 className="text-lg font-bold font-display tracking-widest">
-          PEERIOD
+          Peeriod
         </h1>
       </div>
       <div className="flex items-center gap-4">

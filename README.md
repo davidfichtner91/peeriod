@@ -1,20 +1,20 @@
-# 🩸 PEERIOD
+﻿# đź©¸ Peeriod
 
-Menstruační cyklus tracker pro muže. Vědecky podložené informace o ženském cyklu + praktické tipy, jak se chovat a podporovat.
+MenstruaÄŤnĂ­ cyklus tracker pro muĹľe. VÄ›decky podloĹľenĂ© informace o ĹľenskĂ©m cyklu + praktickĂ© tipy, jak se chovat a podporovat.
 
-## 🚀 Quick Start
+## đźš€ Quick Start
 
 ### 1. Setup Supabase
 
-- Jdi na https://supabase.com → Sign up
-- Vytvoř nový projekt: `peeriod`
-- Zkopíruj si z **Settings → API**:
+- Jdi na https://supabase.com â†’ Sign up
+- VytvoĹ™ novĂ˝ projekt: `Peeriod`
+- ZkopĂ­ruj si z **Settings â†’ API**:
   - `SUPABASE_URL`
   - `SUPABASE_ANON_KEY`
 
-### 2. Spusť SQL migrations
+### 2. SpusĹĄ SQL migrations
 
-V Supabase → **SQL Editor** pusť obsah z `sql/schema.sql`:
+V Supabase â†’ **SQL Editor** pusĹĄ obsah z `sql/schema.sql`:
 
 ```sql
 -- Create users table
@@ -82,69 +82,69 @@ create trigger on_auth_user_created
 ### 3. Nainstaluj dependencies
 
 ```bash
-cd peeriod
+cd Peeriod
 npm install
 ```
 
-### 4. Vytvoř `.env.local`
+### 4. VytvoĹ™ `.env.local`
 
-Zkopíruj `.env.local.example` do `.env.local` a vlož si Supabase credentials:
+ZkopĂ­ruj `.env.local.example` do `.env.local` a vloĹľ si Supabase credentials:
 
 ```
 VITE_SUPABASE_URL=https://xxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGc...
 ```
 
-### 5. Spusť dev server
+### 5. SpusĹĄ dev server
 
 ```bash
 npm run dev
 ```
 
-Appka běží na http://localhost:5173 🎉
+Appka bÄ›ĹľĂ­ na http://localhost:5173 đźŽ‰
 
-## 📁 Project Structure
+## đź“ Project Structure
 
 ```
 src/
-├── components/
-│   ├── Auth/
-│   │   ├── Login.tsx
-│   │   └── Signup.tsx
-│   ├── Calendar.tsx
-│   ├── Dashboard.tsx
-│   ├── Onboarding.tsx
-│   ├── PhaseDetail.tsx
-│   ├── ProtectedRoute.tsx
-│   └── Settings.tsx
-├── context/
-│   └── AuthContext.tsx
-├── lib/
-│   └── supabase.ts
-├── utils/
-│   └── cycle.ts
-├── App.tsx
-├── index.css
-└── main.tsx
+â”śâ”€â”€ components/
+â”‚   â”śâ”€â”€ Auth/
+â”‚   â”‚   â”śâ”€â”€ Login.tsx
+â”‚   â”‚   â””â”€â”€ Signup.tsx
+â”‚   â”śâ”€â”€ Calendar.tsx
+â”‚   â”śâ”€â”€ Dashboard.tsx
+â”‚   â”śâ”€â”€ Onboarding.tsx
+â”‚   â”śâ”€â”€ PhaseDetail.tsx
+â”‚   â”śâ”€â”€ ProtectedRoute.tsx
+â”‚   â””â”€â”€ Settings.tsx
+â”śâ”€â”€ context/
+â”‚   â””â”€â”€ AuthContext.tsx
+â”śâ”€â”€ lib/
+â”‚   â””â”€â”€ supabase.ts
+â”śâ”€â”€ utils/
+â”‚   â””â”€â”€ cycle.ts
+â”śâ”€â”€ App.tsx
+â”śâ”€â”€ index.css
+â””â”€â”€ main.tsx
 ```
 
-## 🔄 User Flow
+## đź”„ User Flow
 
-1. **Sign Up** → `/signup` - Registrace nového uživatele
-2. **Login** → `/login` - Přihlášení
-3. **Onboarding** → `/onboarding` - Zadání data menstruace + délka cyklu
-4. **Dashboard** → `/dashboard` - Hlavní zobrazení kalendáře + info o fázi
-5. **Settings** → `/settings` - Úprava nastavení
+1. **Sign Up** â†’ `/signup` - Registrace novĂ©ho uĹľivatele
+2. **Login** â†’ `/login` - PĹ™ihlĂˇĹˇenĂ­
+3. **Onboarding** â†’ `/onboarding` - ZadĂˇnĂ­ data menstruace + dĂ©lka cyklu
+4. **Dashboard** â†’ `/dashboard` - HlavnĂ­ zobrazenĂ­ kalendĂˇĹ™e + info o fĂˇzi
+5. **Settings** â†’ `/settings` - Ăšprava nastavenĂ­
 
-## 🎯 Features (MVP)
+## đźŽŻ Features (MVP)
 
-- ✅ Auth (Sign up / Login)
-- ✅ Calendar s 4 fázemi (barvy)
-- ✅ Detail fáze (tipy, co se děje)
-- ✅ Onboarding
-- ✅ Settings (úprava cyklu)
+- âś… Auth (Sign up / Login)
+- âś… Calendar s 4 fĂˇzemi (barvy)
+- âś… Detail fĂˇze (tipy, co se dÄ›je)
+- âś… Onboarding
+- âś… Settings (Ăşprava cyklu)
 
-## 📦 Build & Deploy
+## đź“¦ Build & Deploy
 
 ### Build
 
@@ -159,20 +159,20 @@ npm install -g vercel
 vercel
 ```
 
-Appka se automaticky nasadí! 🚀
+Appka se automaticky nasadĂ­! đźš€
 
-## 🐛 Troubleshooting
+## đź› Troubleshooting
 
 **"Missing Supabase environment variables"**
-- Zkontroluj `.env.local` - máš tam URL a KEY?
+- Zkontroluj `.env.local` - mĂˇĹˇ tam URL a KEY?
 
 **"User not found"**
-- RLS policies nemusí fungovat - zkontroluj Supabase **Authentication → Policies**
+- RLS policies nemusĂ­ fungovat - zkontroluj Supabase **Authentication â†’ Policies**
 
-**Calendar není se barvami**
+**Calendar nenĂ­ se barvami**
 - Tailwind se nesestavil - zkus `npm run dev` znova
 
-## 📝 Next Steps (Phase 2)
+## đź“ť Next Steps (Phase 2)
 
 - Push notifications
 - Symptom tracking
@@ -182,4 +182,5 @@ Appka se automaticky nasadí! 🚀
 
 ---
 
-**Made with ❤️ for better relationships**
+**Made with âť¤ď¸Ź for better relationships**
+

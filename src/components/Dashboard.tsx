@@ -139,7 +139,7 @@ export function Dashboard() {
         <header className="bar">
           <div className="brand">
             <Logo variant="gradient" size={34} />
-            <h1>PEERIOD</h1>
+            <h1>Peeriod</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <p className="who">

@@ -69,7 +69,7 @@ export function Onboarding() {
         <div className="text-center mb-8">
           <Logo variant="gradient" size={48} className="mx-auto mb-4" />
           <h1 className="text-3xl font-bold font-display" style={{ letterSpacing: '-0.015em' }}>
-            PEERIOD
+            Peeriod
           </h1>
           <p style={{ color: 'var(--ink-2)', fontSize: '14px', marginTop: '8px' }}>
             Pojďme začít

@@ -20,7 +20,7 @@ export function Logo({ variant = 'gradient', size = 40, className = '' }: LogoPr
       role="img"
       className={className}
     >
-      <title>PEERIOD</title>
+      <title>Peeriod</title>
       <defs>
         {variant === 'gradient' && (
           <linearGradient
