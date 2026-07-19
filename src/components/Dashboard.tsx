@@ -129,7 +129,7 @@ export function Dashboard() {
             {selectedDay !== c.day && (
               <button
                 onClick={() => setSelectedDay(c.day)}
-                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', , marginBottom: '12px', display: 'block' }}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', marginBottom: '12px', display: 'block' }}
               >
                 ← Zpět na dnešek
               </button>
