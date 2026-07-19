@@ -9,7 +9,6 @@ import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
 import { PeriodLog } from './PeriodLog'
 import { CalendarGrid } from './CalendarGrid'
-import { Glyph } from './Glyph'
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
@@ -130,7 +129,7 @@ export function Dashboard() {
             {selectedDay !== c.day && (
               <button
                 onClick={() => setSelectedDay(c.day)}
-                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', textDecorationOffset: '3px', marginBottom: '12px', display: 'block' }}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', , marginBottom: '12px', display: 'block' }}
               >
                 ← Zpět na dnešek
               </button>
@@ -185,7 +184,7 @@ export function Dashboard() {
         <footer style={{ marginTop: '32px', fontSize: '12.5px', color: 'var(--ink-3)', textAlign: 'center' }}>
           <button
             onClick={signOut}
-            style={{ background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', color: 'var(--ink-3)', textDecoration: 'underline', textDecorationOffset: '3px' }}
+            style={{ background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', color: 'var(--ink-3)', textDecoration: 'underline',  }}
           >
             Odhlásit se
           </button>
