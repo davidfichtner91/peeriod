@@ -4,8 +4,10 @@ import { DatePicker } from './DatePicker'
 
 interface PeriodLogProps {
   starts: Date[]
+  ends?: (Date | null)[]
   onAdd: (date: Date) => void
   onDelete: (date: Date) => void
+  onEndAdd?: (startDate: Date, endDate: Date) => void
 }
 
 const fmt = (d: Date) => `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`
@@ -14,8 +16,9 @@ const iso = (d: Date) => {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
 
-export function PeriodLog({ starts, onAdd, onDelete }: PeriodLogProps) {
+export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: PeriodLogProps) {
   const [value, setValue] = useState(iso(new Date()))
+  const [endValue, setEndValue] = useState<string | null>(null)
 
   const sorted = [...starts].sort((a, b) => b.getTime() - a.getTime())
   const iv = intervals(starts)
@@ -80,19 +83,44 @@ export function PeriodLog({ starts, onAdd, onDelete }: PeriodLogProps) {
           const n = prev
             ? Math.round((d.getTime() - prev.getTime()) / 864e5)
             : null
+          const endDate = ends[i]
+          const hasEnd = endDate !== null && endDate !== undefined
+          const dayLen = hasEnd
+            ? Math.round((endDate.getTime() - d.getTime()) / 864e5)
+            : null
+
           return (
-            <li key={iso(d)}>
+            <li key={iso(d)} style={{ opacity: hasEnd ? 0.9 : 1 }}>
               <time dateTime={iso(d)}>{fmt(d)}</time>
               <span className="len">
-                {n === null ? 'první záznam' : `cyklus ${n} dní`}
+                {hasEnd ? (
+                  <>
+                    {fmt(endDate)} <span style={{ fontSize: '12px', color: 'var(--ink-3)' }}>({dayLen}d)</span>
+                  </>
+                ) : (
+                  n === null ? 'první záznam' : `cyklus ${n} dní`
+                )}
               </span>
-              {n !== null && isOutlier(n) && (
+              {n !== null && isOutlier(n) && !hasEnd && (
                 <span
                   className="flag"
                   title={`Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá`}
                 >
                   mimo průměr
                 </span>
+              )}
+              {!hasEnd && (
+                <button
+                  className="btn"
+                  style={{ fontSize: '12px', padding: '4px 8px', marginLeft: 'auto' }}
+                  onClick={() => {
+                    const today = new Date()
+                    onEndAdd?.(d, today)
+                    setEndValue(null)
+                  }}
+                >
+                  Skončilo
+                </button>
               )}
               <button className="del" onClick={() => onDelete(d)}>
                 Smazat

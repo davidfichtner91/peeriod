@@ -62,7 +62,27 @@ export function Dashboard() {
       .insert({ user_id: user.id, start_date: dateStr })
     if (!error) {
       setStarts([...starts, new Date(dateStr + 'T00:00:00')])
+      setEnds([...ends, null])
       setSelectedDay(null)
+    }
+  }
+
+  const addEnd = async (startDate: Date, endDate: Date) => {
+    if (!user) return
+    const startStr = isoOf(startDate)
+    const endStr = isoOf(endDate)
+    const { error } = await supabase
+      .from('period_starts')
+      .update({ end_date: endStr })
+      .eq('user_id', user.id)
+      .eq('start_date', startStr)
+    if (!error) {
+      const idx = starts.findIndex((s) => isoOf(s) === startStr)
+      if (idx !== -1) {
+        const newEnds = [...ends]
+        newEnds[idx] = new Date(endStr + 'T00:00:00')
+        setEnds(newEnds)
+      }
     }
   }
 
@@ -75,7 +95,11 @@ export function Dashboard() {
       .eq('user_id', user.id)
       .eq('start_date', dateStr)
     if (!error) {
-      setStarts(starts.filter((s) => isoOf(s) !== dateStr))
+      const idx = starts.findIndex((s) => isoOf(s) === dateStr)
+      const newStarts = starts.filter((s) => isoOf(s) !== dateStr)
+      const newEnds = ends.filter((_, i) => i !== idx)
+      setStarts(newStarts)
+      setEnds(newEnds)
       setSelectedDay(null)
     }
   }
@@ -181,7 +205,13 @@ export function Dashboard() {
           </div>
         </div>
 
-        <PeriodLog starts={starts} onAdd={addStart} onDelete={deleteStart} />
+        <PeriodLog
+          starts={starts}
+          ends={ends}
+          onAdd={addStart}
+          onDelete={deleteStart}
+          onEndAdd={addEnd}
+        />
 
         <CalendarGrid
           starts={starts}
