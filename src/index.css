@@ -162,7 +162,13 @@
 .ringwrap { position: relative; width: 100%; }
 
 .ring { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
-.ring:focus { outline: none; }
+/* outline by na SVG vykreslil čtverec kolem kruhu — indikátor řeší .focus-ring uvnitř */
+svg.ring:focus,
+svg.ring:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
 .ring.dragging { cursor: grabbing; }
 .ring.dragging .seg { transition: none; }
 
@@ -200,10 +206,23 @@
   margin-bottom: 12px; display: block;
 }
 
-.hero h2 { font-size: 29px; line-height: 1.18; margin-bottom: 9px; }
-.lede { color: var(--ink-2); margin: 0 0 22px; max-width: 52ch; }
+.hero h2 {
+  font-size: 29px; line-height: 1.18; margin-bottom: 9px;
+  min-height: calc(2 * 1.18em);
+  display: flex; align-items: flex-end;
+}
+.lede {
+  color: var(--ink-2); margin: 0 0 22px; max-width: 52ch;
+  min-height: calc(3 * 1.6em);
+}
 
-.tips { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+/* Výška je rezervovaná na nejdelší variantu (4 tipy), aby se stránka
+   při přepnutí dne nehýbala. Na mobilu se rezervace ruší. */
+.tips {
+  list-style: none; margin: 0; padding: 0;
+  border-top: 1px solid var(--line);
+  min-height: 296px;
+}
 .tips li { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); }
 .tips .n {
   font-family: var(--font-display); font-size: 12px; font-weight: 600;
@@ -217,6 +236,7 @@
 
 /* ---------- cards ---------- */
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.cols .card { min-height: 232px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .chip {
   font-size: 13px; border: 1px solid var(--line-2); border-radius: 999px;
@@ -318,7 +338,10 @@
   .hero { grid-template-columns: 1fr; gap: 24px; padding: 22px; }
   .ringcol { max-width: 250px; margin: 0 auto; }
   .cols { grid-template-columns: 1fr; }
-  .hero h2 { font-size: 24px; }
+  .cols .card { min-height: 0; }
+  .hero h2 { font-size: 24px; min-height: 0; display: block; }
+  .lede { min-height: 0; }
+  .tips { min-height: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
