@@ -18,6 +18,8 @@ const iso = (d: Date) => {
 
 export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: PeriodLogProps) {
   const [value, setValue] = useState(iso(new Date()))
+  const [endingDate, setEndingDate] = useState<string | null>(null)
+  const [endingStart, setEndingStart] = useState<Date | null>(null)
 
   const sorted = [...starts].sort((a, b) => b.getTime() - a.getTime())
   const iv = intervals(starts)
@@ -109,16 +111,65 @@ export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: Peri
                 </span>
               )}
               {!hasEnd && (
-                <button
-                  className="btn"
-                  style={{ fontSize: '12px', padding: '4px 8px', marginLeft: 'auto' }}
-                  onClick={() => {
-                    const today = new Date()
-                    onEndAdd?.(d, today)
-                  }}
-                >
-                  Skončilo
-                </button>
+                <>
+                  {endingStart?.getTime() === d.getTime() ? (
+                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                      <div style={{ minWidth: '100px' }}>
+                        <DatePicker
+                          id={`end-date-${iso(d)}`}
+                          value={endingDate || iso(new Date())}
+                          onChange={setEndingDate}
+                        />
+                      </div>
+                      <button
+                        className="btn"
+                        style={{ fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          if (endingDate) {
+                            onEndAdd?.(d, new Date(endingDate + 'T00:00:00'))
+                            setEndingDate(null)
+                            setEndingStart(null)
+                          }
+                        }}
+                      >
+                        OK
+                      </button>
+                      <button
+                        className="btn ghost"
+                        style={{ fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          setEndingDate(null)
+                          setEndingStart(null)
+                        }}
+                      >
+                        Zrušit
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                      <button
+                        className="btn"
+                        style={{ fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          setEndingDate(iso(d))
+                          setEndingStart(d)
+                        }}
+                      >
+                        Zaznamenat konec
+                      </button>
+                      <button
+                        className="btn"
+                        style={{ fontSize: '12px', padding: '4px 8px' }}
+                        onClick={() => {
+                          const today = new Date()
+                          onEndAdd?.(d, today)
+                        }}
+                      >
+                        Skončilo dnes
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
               <button className="del" onClick={() => onDelete(d)}>
                 Smazat
