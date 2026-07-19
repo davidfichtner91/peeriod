@@ -1,0 +1,37 @@
+-- Profil uživatele. Řádek musí existovat dřív, než do něj kdokoli zapíše
+-- jméno partnerky — jinak update projde "úspěšně" a neudělá nic.
+
+create table if not exists profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  partner_name text,
+  created_at timestamptz default now()
+);
+
+alter table profiles enable row level security;
+
+drop policy if exists "own profile" on profiles;
+create policy "own profile" on profiles
+  for all using (auth.uid() = id) with check (auth.uid() = id);
+
+-- Nový uživatel dostane prázdný profil automaticky při registraci.
+create or replace function handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into profiles (id) values (new.id)
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function handle_new_user();
+
+-- Doplnění profilů pro uživatele, kteří se registrovali dřív.
+insert into profiles (id)
+select id from auth.users
+on conflict (id) do nothing;

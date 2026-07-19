@@ -1,136 +1,99 @@
-import { avgLen, intervals, isOutlier } from '../utils/cycle'
+import { useState } from 'react'
+import { avgLen, intervals, isOutlier, MIN_LEN, MAX_LEN } from '../utils/cycle'
 
 interface PeriodLogProps {
   starts: Date[]
   onAdd: (date: Date) => void
   onDelete: (date: Date) => void
-  onToday: () => void
 }
 
-const fmt = (d: Date) =>
-  `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`
-const iso = (d: Date) => d.toISOString().slice(0, 10)
+const fmt = (d: Date) => `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`
+const iso = (d: Date) => {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
 
-export function PeriodLog({
-  starts,
-  onAdd,
-  onDelete,
-  onToday,
-}: PeriodLogProps) {
-  const MIN_LEN = 21
-  const MAX_LEN = 35
+export function PeriodLog({ starts, onAdd, onDelete }: PeriodLogProps) {
+  const [value, setValue] = useState(iso(new Date()))
 
-  const s = [...starts].sort((a, b) => b.getTime() - a.getTime())
+  const sorted = [...starts].sort((a, b) => b.getTime() - a.getTime())
   const iv = intervals(starts)
   const used = iv.filter((n) => !isOutlier(n))
   const skipped = iv.length - used.length
-  const spread =
-    used.length > 1 ? `${Math.min(...used)}–${Math.max(...used)}` : '—'
+  const spread = used.length > 1 ? `${Math.min(...used)}–${Math.max(...used)}` : '—'
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      onAdd(new Date(e.target.value + 'T00:00:00'))
-    }
+  const add = (d: Date) => {
+    if (isNaN(d.getTime())) return
+    if (starts.some((s) => iso(s) === iso(d))) return
+    onAdd(d)
   }
 
   return (
-    <div className="border border-line rounded-3.5 p-6 mt-5">
-      <h3 className="text-base font-bold mb-3.5">Záznamy menstruace</h3>
-      <p className="text-xs text-ink-3 mb-5 pb-5 border-b border-line">
+    <div className="card" style={{ marginBottom: 20 }}>
+      <h3>Záznamy menstruace</h3>
+      <p className="note note--plain">
         Každý zadaný začátek přepočítá předpověď. Průměr se počítá z posledních
         šesti cyklů v rozsahu {MIN_LEN}–{MAX_LEN} dní.
       </p>
 
-      <div className="flex gap-2.5 flex-wrap mb-4">
+      <div className="logbar">
         <input
           type="date"
-          defaultValue={iso(new Date())}
-          onChange={handleDateChange}
-          className="px-3 py-2 border border-line-2 rounded-2.25 bg-card text-ink font-body text-sm"
+          className="input"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          aria-label="Datum začátku menstruace"
         />
-        <button
-          onClick={() => onToday()}
-          className="px-3 py-2 border border-ink bg-ink text-paper font-body text-sm font-medium rounded-2.25 cursor-pointer hover:opacity-90"
-        >
+        <button className="btn" onClick={() => add(new Date(value + 'T00:00:00'))}>
+          Zaznamenat začátek
+        </button>
+        <button className="btn ghost" onClick={() => add(new Date())}>
           Začalo dnes
         </button>
       </div>
 
-      <div className="flex gap-6.5 flex-wrap mb-4.5">
-        <div>
-          <b className="block font-display text-2xl font-bold tnum">
-            {avgLen(starts)}
-          </b>
-          <span className="text-xs text-ink-3">průměrná délka</span>
+      <div className="stats">
+        <div className="stat">
+          <b className="tnum">{avgLen(starts)}</b>
+          <span>průměrná délka</span>
         </div>
-        <div>
-          <b className="block font-display text-2xl font-bold tnum">
-            {spread}
-          </b>
-          <span className="text-xs text-ink-3">rozptyl (dní)</span>
+        <div className="stat">
+          <b className="tnum">{spread}</b>
+          <span>rozptyl (dní)</span>
         </div>
-        <div>
-          <b className="block font-display text-2xl font-bold tnum">
-            {starts.length}
-          </b>
-          <span className="text-xs text-ink-3">záznamů</span>
+        <div className="stat">
+          <b className="tnum">{starts.length}</b>
+          <span>záznamů</span>
         </div>
         {skipped > 0 && (
-          <div>
-            <b className="block font-display text-2xl font-bold tnum">
-              {skipped}
-            </b>
-            <span className="text-xs text-ink-3">mimo průměr</span>
+          <div className="stat">
+            <b className="tnum">{skipped}</b>
+            <span>mimo průměr</span>
           </div>
         )}
       </div>
 
-      <ul className="list-none m-0 p-0 text-sm">
-        {s.map((d, i) => {
-          const prev = s[i + 1]
-          if (!prev) {
-            return (
-              <li
-                key={iso(d)}
-                className="flex items-center gap-3 py-2.25 border-b border-line"
-              >
-                <time className="tnum min-w-22">{fmt(d)}</time>
-                <span className="text-ink-2 text-xs">první záznam</span>
-                <button
-                  onClick={() => onDelete(d)}
-                  className="ml-auto bg-none border-0 text-ink-3 cursor-pointer font-body text-xs underline"
-                  style={{ textDecoration: '3px' }}
-                >
-                  Smazat
-                </button>
-              </li>
-            )
-          }
-
-          const n = Math.round(
-            (d.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
-          )
-          const flag = isOutlier(n) ? (
-            <span
-              className="text-xs uppercase tracking-widest text-p-lute border border-p-lute rounded-full px-2.25 py-0.5"
-              title={`Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá`}
-            >
-              mimo průměr
-            </span>
-          ) : null
-
+      <ul className="log">
+        {sorted.map((d, i) => {
+          const prev = sorted[i + 1]
+          const n = prev
+            ? Math.round((d.getTime() - prev.getTime()) / 864e5)
+            : null
           return (
-            <li
-              key={iso(d)}
-              className="flex items-center gap-3 py-2.25 border-b border-line"
-            >
-              <time className="tnum min-w-22">{fmt(d)}</time>
-              <span className="text-ink-2 text-xs">cyklus {n} dní</span>
-              {flag}
-              <button
-                onClick={() => onDelete(d)}
-                className="ml-auto bg-none border-0 text-ink-3 cursor-pointer font-body text-xs underline"
-              >
+            <li key={iso(d)}>
+              <time dateTime={iso(d)}>{fmt(d)}</time>
+              <span className="len">
+                {n === null ? 'první záznam' : `cyklus ${n} dní`}
+              </span>
+              {n !== null && isOutlier(n) && (
+                <span
+                  className="flag"
+                  title={`Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá`}
+                >
+                  mimo průměr
+                </span>
+              )}
+              <button className="del" onClick={() => onDelete(d)}>
                 Smazat
               </button>
             </li>

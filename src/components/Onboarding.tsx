@@ -21,27 +21,19 @@ export function Onboarding() {
       if (!user) throw new Error('User not found')
 
       const dateStr = startDate.split('T')[0]
-      const [err1] = await Promise.all([
-        (async () => {
-          const { error } = await supabase
-            .from('period_starts')
-            .insert({
-              user_id: user.id,
-              start_date: dateStr,
-            })
-          return error
-        })(),
-        (async () => {
-          if (partnerName) {
-            await supabase
-              .from('profiles')
-              .update({ partner_name: partnerName })
-              .eq('id', user.id)
-          }
-        })(),
-      ])
 
-      if (err1) throw err1
+      const { error: startErr } = await supabase
+        .from('period_starts')
+        .insert({ user_id: user.id, start_date: dateStr })
+      if (startErr) throw startErr
+
+      if (partnerName.trim()) {
+        // upsert, ne update: řádek v profiles nemusí existovat
+        const { error: profErr } = await supabase
+          .from('profiles')
+          .upsert({ id: user.id, partner_name: partnerName.trim() })
+        if (profErr) throw profErr
+      }
 
       navigate('/dashboard')
     } catch (err: any) {

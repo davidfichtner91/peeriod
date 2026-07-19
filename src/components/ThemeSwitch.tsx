@@ -1,57 +1,51 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-type Theme = 'light' | 'dark' | 'auto'
+type Theme = 'light' | 'auto' | 'dark'
+
+const LABELS: Record<Theme, string> = {
+  light: 'Světlý',
+  auto: 'Auto',
+  dark: 'Tmavý',
+}
+
+function read(): Theme {
+  try {
+    const v = localStorage.getItem('peeriod-theme')
+    if (v === 'light' || v === 'dark' || v === 'auto') return v
+  } catch {
+    /* localStorage nemusí být dostupné */
+  }
+  return 'auto'
+}
+
+export function applyTheme(mode: Theme) {
+  if (mode === 'auto') document.documentElement.removeAttribute('data-theme')
+  else document.documentElement.setAttribute('data-theme', mode)
+  try {
+    localStorage.setItem('peeriod-theme', mode)
+  } catch {
+    /* ignore */
+  }
+}
 
 export function ThemeSwitch() {
-  const [theme, setTheme] = useState<Theme>('auto')
-  const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState<Theme>(read)
 
-  useEffect(() => {
-    const saved = (localStorage.getItem('peeriod-theme') as Theme) || 'auto'
-    setTheme(saved)
-    applyTheme(saved)
-    setMounted(true)
-  }, [])
-
-  function applyTheme(mode: Theme) {
-    if (mode === 'auto') {
-      document.documentElement.removeAttribute('data-theme')
-    } else {
-      document.documentElement.setAttribute('data-theme', mode)
-    }
-    try {
-      localStorage.setItem('peeriod-theme', mode)
-    } catch {}
+  const change = (t: Theme) => {
+    setTheme(t)
+    applyTheme(t)
   }
-
-  const handleChange = (newTheme: Theme) => {
-    setTheme(newTheme)
-    applyTheme(newTheme)
-  }
-
-  if (!mounted) return null
 
   return (
-    <div className="flex border border-line-2 rounded-full p-0.5 gap-0.5" role="radiogroup" aria-label="Motiv">
-      {(['light', 'dark', 'auto'] as const).map((t) => (
+    <div className="themeswitch" role="radiogroup" aria-label="Motiv">
+      {(['light', 'auto', 'dark'] as Theme[]).map((t) => (
         <button
           key={t}
-          onClick={() => handleChange(t)}
+          onClick={() => change(t)}
           aria-pressed={theme === t}
-          aria-label={
-            t === 'light'
-              ? 'Světlý motiv'
-              : t === 'dark'
-                ? 'Tmavý motiv'
-                : 'Podle systému'
-          }
-          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-            theme === t
-              ? 'bg-ink text-paper'
-              : 'bg-transparent text-ink-3 hover:text-ink-2'
-          }`}
+          aria-label={`${LABELS[t]} motiv`}
         >
-          {t === 'light' ? 'Světlý' : t === 'dark' ? 'Tmavý' : 'Auto'}
+          {LABELS[t]}
         </button>
       ))}
     </div>

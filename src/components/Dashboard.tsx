@@ -1,45 +1,43 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cycleAt, contentFor } from '../utils/cycle'
-import { PHASES, FEELS } from '../data/phases'
+import { cycleAt, contentFor, avgLen } from '../utils/cycle'
 import { Logo } from './Logo'
 import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
 import { PeriodLog } from './PeriodLog'
 import { CalendarGrid } from './CalendarGrid'
+import { Glyph } from './Glyph'
+
+const isoOf = (d: Date) => {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const [starts, setStarts] = useState<Date[]>([])
   const [partnerName, setPartnerName] = useState<string>()
-  const [selectedDay, setSelectedDay] = useState<number>(1)
+  const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [now] = useState(new Date())
+  const [now] = useState(() => new Date())
 
   useEffect(() => {
-    const fetchData = async () => {
+    const load = async () => {
       if (!user) return
-
       const [startsRes, profileRes] = await Promise.all([
         supabase
           .from('period_starts')
           .select('start_date')
           .eq('user_id', user.id)
           .order('start_date', { ascending: false }),
-        supabase
-          .from('profiles')
-          .select('partner_name')
-          .eq('id', user.id)
-          .single(),
+        supabase.from('profiles').select('partner_name').eq('id', user.id).maybeSingle(),
       ])
 
       if (startsRes.data?.length) {
-        const dates = startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00'))
-        setStarts(dates)
-        const c = cycleAt(now, dates, now)
-        setSelectedDay(c.day)
+        setStarts(startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')))
       }
 
       if (!profileRes.error && profileRes.data?.partner_name) {
@@ -48,137 +46,142 @@ export function Dashboard() {
 
       setLoading(false)
     }
+    load()
+  }, [user])
 
-    fetchData()
-  }, [user, now])
+  const addStart = async (date: Date) => {
+    if (!user) return
+    const dateStr = isoOf(date)
+    const { error } = await supabase
+      .from('period_starts')
+      .insert({ user_id: user.id, start_date: dateStr })
+    if (!error) {
+      setStarts([...starts, new Date(dateStr + 'T00:00:00')])
+      setSelectedDay(null)
+    }
+  }
+
+  const deleteStart = async (date: Date) => {
+    if (!user) return
+    const dateStr = isoOf(date)
+    const { error } = await supabase
+      .from('period_starts')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('start_date', dateStr)
+    if (!error) {
+      setStarts(starts.filter((s) => isoOf(s) !== dateStr))
+      setSelectedDay(null)
+    }
+  }
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--paper)' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '48px', height: '48px', border: '4px solid var(--line-2)', borderTopColor: 'var(--ink)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
-          <p style={{ color: 'var(--ink-2)' }}>Načítám...</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+        <p style={{ color: 'var(--ink-2)' }}>Načítám…</p>
       </div>
     )
   }
 
   if (!starts.length) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: 'var(--paper)' }}>
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 16 }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--ink-2)', marginBottom: '16px' }}>Nemáš žádný cyklus</p>
-          <a href="/onboarding" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>
-            Vytvořit cyklus
+          <p style={{ color: 'var(--ink-2)', marginBottom: 16 }}>
+            Zatím tu není žádný záznam.
+          </p>
+          <a href="/onboarding" style={{ color: 'var(--ink)' }}>
+            Zadat začátek menstruace
           </a>
         </div>
       </div>
     )
   }
 
-  const c = cycleAt(now, starts, now)
-  const content = contentFor(selectedDay, c.len, PHASES, FEELS)
-
-  const handleAddStart = async (date: Date) => {
-    if (!user) return
-    const dateStr = date.toISOString().slice(0, 10)
-    await supabase.from('period_starts').insert({
-      user_id: user.id,
-      start_date: dateStr,
-    })
-    setStarts([...starts, new Date(dateStr + 'T00:00:00')])
-  }
-
-  const handleDeleteStart = async (date: Date) => {
-    if (!user) return
-    const dateStr = date.toISOString().slice(0, 10)
-    await supabase
-      .from('period_starts')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('start_date', dateStr)
-    setStarts(starts.filter((s) => s.toISOString().slice(0, 10) !== dateStr))
-  }
+  const current = cycleAt(now, starts, now)
+  const day = selectedDay ?? current.day
+  const content = contentFor(day, current.len)
+  const isToday = day === current.day
 
   return (
-    <div style={{ backgroundColor: 'var(--paper)', color: 'var(--ink)', minHeight: '100vh', fontFamily: 'var(--font-body)' }}>
-      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 20px 72px' }}>
-        {/* HEADER */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '20px 0 26px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '11px' }}>
+    <div style={{ minHeight: '100vh' }}>
+      <div className="wrap">
+        <header className="bar">
+          <div className="brand">
             <Logo variant="gradient" size={34} />
-            <h1 style={{ fontSize: '19px', letterSpacing: '0.15em', fontWeight: 700, fontFamily: 'var(--font-display)', margin: 0 }}>
-              PEERIOD
-            </h1>
+            <h1>PEERIOD</h1>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <p style={{ fontSize: '13px', color: 'var(--ink-2)', margin: 0 }}>
-              Cyklus: <b style={{ color: 'var(--ink)', fontWeight: 600 }}>{partnerName || 'Partnerky'}</b> · průměr <span style={{ fontFamily: 'monospace' }}>28</span> dní
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <p className="who">
+              Cyklus: <b>{partnerName || 'partnerky'}</b> ·{' '}
+              <span className="tnum">průměr {avgLen(starts)} dní</span>
             </p>
             <ThemeSwitch />
           </div>
-        </div>
+        </header>
 
-        {/* HERO */}
-        <section style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '26px 28px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: '34px', alignItems: 'center', marginBottom: '20px' }}>
+        <section className="hero">
+          <CycleRing
+            len={current.len}
+            selectedDay={day}
+            today={current.day}
+            onDaySelect={(d) => {
+              setDragging(true)
+              setSelectedDay(d === current.day ? null : d)
+              window.setTimeout(() => setDragging(false), 0)
+            }}
+          />
+
           <div>
-            <CycleRing len={c.len} selectedDay={selectedDay} onDaySelect={setSelectedDay} today={c.day} />
-          </div>
-          <div>
-            {selectedDay !== c.day && (
-              <button
-                onClick={() => setSelectedDay(c.day)}
-                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', marginBottom: '12px', display: 'block' }}
-              >
+            {!isToday && (
+              <button className="back" onClick={() => setSelectedDay(null)}>
                 ← Zpět na dnešek
               </button>
             )}
             <PhaseContent
+              eyebrow={
+                isToday
+                  ? `Dnes · ${content.phase.name}`
+                  : `Den ${day} · ${content.phase.name} (${content.from}.–${content.to}. den)`
+              }
               title={content.stage.title}
               lede={content.stage.lede}
               tips={content.stage.tips}
-              feels={content.feels}
-              animated={selectedDay !== c.day}
+              fadeKey={content.stage.title}
+              animate={!dragging}
             />
           </div>
         </section>
 
-        {/* BIO + FEELS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-          <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)', fontWeight: 600, margin: 0 }}>
-              Co se děje v jejím těle
-            </h3>
-            <p style={{ margin: 0, color: 'var(--ink-2)', fontSize: '14px' }}>
-              {content.stage.bio}
-            </p>
+        <div className="cols">
+          <div className="card">
+            <h3>Co se děje v jejím těle</h3>
+            <p>{content.stage.bio}</p>
           </div>
-          <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)', fontWeight: 600, margin: 0 }}>
-              Jak se může cítit
-            </h3>
-            <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', listStyle: 'none', margin: 0, padding: 0 }}>
-              {content.feels.map((feel, idx) => (
-                <li key={idx} style={{ fontSize: '13px', border: '1px solid var(--line-2)', borderRadius: '999px', padding: '5px 12px', color: 'var(--ink-2)' }}>
-                  {feel[0]}
-                  <i style={{ fontStyle: 'normal', color: 'var(--ink-3)', marginLeft: '6px', fontSize: '11px' }}>
-                    {feel[1]}
-                  </i>
+
+          <div className="card">
+            <h3>Jak se může cítit</h3>
+            <ul className="chips">
+              {content.feels.map((f) => (
+                <li className="chip" key={f[0]}>
+                  {f[0]}
+                  <i>{f[1]}</i>
                 </li>
               ))}
             </ul>
-            <p style={{ fontSize: '12.5px', color: 'var(--ink-3)', lineHeight: 1.55, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)', margin: '20px 0 0 0' }}>
+            <p className="note">
               Orientační, ne diagnóza. Každý cyklus je jiný — ptej se místo domýšlení.
             </p>
           </div>
         </div>
 
-        {/* PERIOD LOG */}
-        <PeriodLog starts={starts} onAdd={handleAddStart} onDelete={handleDeleteStart} onToday={() => handleAddStart(new Date())} />
+        <PeriodLog starts={starts} onAdd={addStart} onDelete={deleteStart} />
 
-        {/* CALENDAR */}
-        <CalendarGrid starts={starts} onDaySelect={setSelectedDay} now={now} />
+        <CalendarGrid
+          starts={starts}
+          now={now}
+          onDaySelect={(d) => setSelectedDay(d === current.day ? null : d)}
+        />
 
         {/* FOOTER */}
         <footer style={{ marginTop: '32px', fontSize: '12.5px', color: 'var(--ink-3)', textAlign: 'center' }}>
