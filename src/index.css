@@ -161,12 +161,26 @@
 .ringcol { width: 100%; }
 .ringwrap { position: relative; width: 100%; }
 
-.ring { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
-/* outline by na SVG vykreslil čtverec kolem kruhu — indikátor řeší .focus-ring uvnitř */
-svg.ring:focus,
-svg.ring:focus-visible {
+/* Jakýkoli outline nebo border na tomhle SVG se vykreslí jako čtverec kolem kruhu,
+   protože obalová oblast SVG je čtverec. Viditelný indikátor fokusu proto obstarává
+   výhradně kroužek .focus-ring nakreslený uvnitř. */
+svg.ring {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: grab;
   outline: none !important;
   outline-offset: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+svg.ring:focus,
+svg.ring:focus-visible,
+svg.ring:active {
+  outline: none !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 .ring.dragging { cursor: grabbing; }
