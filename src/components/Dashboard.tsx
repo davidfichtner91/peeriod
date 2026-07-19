@@ -42,7 +42,7 @@ export function Dashboard() {
         setSelectedDay(c.day)
       }
 
-      if (profileRes.data?.partner_name) {
+      if (!profileRes.error && profileRes.data?.partner_name) {
         setPartnerName(profileRes.data.partner_name)
       }
 
@@ -182,9 +182,12 @@ export function Dashboard() {
 
         {/* FOOTER */}
         <footer style={{ marginTop: '32px', fontSize: '12.5px', color: 'var(--ink-3)', textAlign: 'center' }}>
+          <a href="/settings" style={{ color: 'var(--ink-3)', textDecoration: 'underline', marginRight: '16px' }}>
+            Upravit nastavení
+          </a>
           <button
             onClick={signOut}
-            style={{ background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', color: 'var(--ink-3)', textDecoration: 'underline',  }}
+            style={{ background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', color: 'var(--ink-3)', textDecoration: 'underline' }}
           >
             Odhlásit se
           </button>
