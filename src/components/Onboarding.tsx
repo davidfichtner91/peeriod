@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { Logo } from './Logo'
+import { DatePicker } from './DatePicker'
 
 export function Onboarding() {
   const [startDate, setStartDate] = useState('')
@@ -83,19 +84,10 @@ export function Onboarding() {
             >
               Kdy začala poslední menstruace?
             </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-              className="w-full px-4 py-2 font-body text-sm"
-              style={{
-                border: '1px solid var(--line-2)',
-                borderRadius: '9px',
-                backgroundColor: 'var(--card)',
-                color: 'var(--ink)',
-              }}
-            />
+            <DatePicker
+  value={startDate}
+  onChange={setStartDate}
+/>
             <p style={{ fontSize: '12px', color: 'var(--ink-3)', marginTop: '4px' }}>
               Např. 2026-07-01
             </p>
