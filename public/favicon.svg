@@ -6,7 +6,8 @@
       <stop offset="100%" stop-color="#3b82f6"/>
     </linearGradient>
   </defs>
-  <g transform="translate(-6.5,-3.5) scale(0.36)" fill="none" stroke="url(#fg)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+  <rect width="64" height="64" rx="15" fill="url(#fg)"/>
+  <g transform="translate(-5.8,-3.8) scale(0.315)" fill="none" stroke="#ffffff" stroke-width="19" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="100" cy="100" r="36"/>
     <path d="M125.5 74.5 L162 38"/>
     <path d="M140 38 H162 V60"/>
