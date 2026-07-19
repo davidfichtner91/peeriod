@@ -366,15 +366,18 @@ svg.ring:active {
    MODAL
    ============================================================ */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 999; padding: 20px;
+  overflow-y: auto;
 }
 
 .modal {
   background: var(--card); border: 1px solid var(--line);
-  border-radius: var(--r); padding: 28px; max-width: 500px;
+  border-radius: var(--r); padding: 28px; width: 100%; max-width: 500px;
   max-height: 90vh; overflow-y: auto; animation: modal-in .2s ease;
+  margin: auto;
 }
 
 @keyframes modal-in {

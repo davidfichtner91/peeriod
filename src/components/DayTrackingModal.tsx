@@ -6,11 +6,11 @@ const SYMPTOMS = [
   'Bolest',
   'Únava',
   'Nausea',
-  'Nadýchání',
+  'Nadýmání',
   'Citlivá prsa',
   'Bolest hlavy',
   'Nespavost',
-  'Zvýšená libido',
+  'Zvýšené libido',
 ]
 
 interface DayTrackingModalProps {
