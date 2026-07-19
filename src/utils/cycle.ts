@@ -48,29 +48,31 @@ const mid = (d: Date): number =>
 /**
  * Luteální fáze trvá stabilně ~14 dní, folikulární se protahuje a zkracuje.
  * Ovulace se proto kotví od KONCE cyklu, ne pevným číslem dne.
+ * @param len délka cyklu (dny)
+ * @param periodLen délka menstruace (dny, default 5)
  */
-export function bounds(len: number): PhaseBounds {
+export function bounds(len: number, periodLen: number = 5): PhaseBounds {
   const ovul = Math.max(8, len - 14)
   return {
-    mens: [1, 5],
-    foli: [6, ovul - 2],
+    mens: [1, periodLen],
+    foli: [periodLen + 1, ovul - 2],
     ovul: [ovul - 1, ovul + 1],
     lute: [ovul + 2, len],
   }
 }
 
-export function phaseOf(day: number, len: number): PhaseKey {
-  const b = bounds(len)
+export function phaseOf(day: number, len: number, periodLen: number = 5): PhaseKey {
+  const b = bounds(len, periodLen)
   return ORDER.find((k) => day >= b[k][0] && day <= b[k][1]) ?? 'lute'
 }
 
 /** Barva fáze pro daný den — používá ji kruh i kalendář. */
-export function colorOf(day: number, len: number): string {
-  return (PHASES as Record<PhaseKey, Phase>)[phaseOf(day, len)].color
+export function colorOf(day: number, len: number, periodLen: number = 5): string {
+  return (PHASES as Record<PhaseKey, Phase>)[phaseOf(day, len, periodLen)].color
 }
 
-export function phaseFor(day: number, len: number): Phase {
-  return (PHASES as Record<PhaseKey, Phase>)[phaseOf(day, len)]
+export function phaseFor(day: number, len: number, periodLen: number = 5): Phase {
+  return (PHASES as Record<PhaseKey, Phase>)[phaseOf(day, len, periodLen)]
 }
 
 export function isOutlier(n: number): boolean {
@@ -93,6 +95,22 @@ export function avgLen(starts: Date[]): number {
     .slice(-6)
   if (!usable.length) return 28
   return Math.round(usable.reduce((a, b) => a + b, 0) / usable.length)
+}
+
+/** Průměrná délka menstruace (3-7 dní typicky) */
+export function avgPeriodLen(starts: Date[], ends?: Date[]): number {
+  if (!ends || ends.length === 0) return 5 // default
+  const lengths = starts
+    .map((start, i) => {
+      const end = ends[i]
+      if (!end) return null
+      return Math.round((mid(end) - mid(start)) / DAY)
+    })
+    .filter((len): len is number => len !== null && len > 0 && len <= 10)
+    .slice(-6)
+
+  if (!lengths.length) return 5
+  return Math.round(lengths.reduce((a, b) => a + b, 0) / lengths.length)
 }
 
 export function cycleAt(
@@ -138,10 +156,10 @@ export function isStart(date: Date, starts: Date[]): boolean {
  * Vybere fázi i podfázi podle RELATIVNÍ pozice ve fázi,
  * takže texty sedí i u 24denního nebo 33denního cyklu.
  */
-export function contentFor(day: number, len: number): ContentInfo {
-  const key = phaseOf(day, len)
+export function contentFor(day: number, len: number, periodLen: number = 5): ContentInfo {
+  const key = phaseOf(day, len, periodLen)
   const phase = (PHASES as Record<PhaseKey, Phase>)[key]
-  const b = bounds(len)[key]
+  const b = bounds(len, periodLen)[key]
   const span = Math.max(1, b[1] - b[0] + 1)
   const prog = (day - b[0]) / span
   const idx = Math.min(

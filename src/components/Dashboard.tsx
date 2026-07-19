@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cycleAt, contentFor, avgLen } from '../utils/cycle'
+import { cycleAt, contentFor, avgLen, avgPeriodLen } from '../utils/cycle'
 import { Logo } from './Logo'
 import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
@@ -18,6 +18,7 @@ const isoOf = (d: Date) => {
 export function Dashboard() {
   const { user, signOut } = useAuth()
   const [starts, setStarts] = useState<Date[]>([])
+  const [ends, setEnds] = useState<(Date | null)[]>([])
   const [partnerName, setPartnerName] = useState<string>()
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -38,7 +39,10 @@ export function Dashboard() {
       ])
 
       if (startsRes.data?.length) {
-        setStarts(startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')))
+        const startDates = startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00'))
+        const endDates = startsRes.data.map((r) => r.end_date ? new Date(r.end_date + 'T00:00:00') : null)
+        setStarts(startDates)
+        setEnds(endDates)
       }
 
       if (!profileRes.error && profileRes.data?.partner_name) {
@@ -100,8 +104,9 @@ export function Dashboard() {
   }
 
   const current = cycleAt(now, starts, now)
+  const periodLen = avgPeriodLen(starts, ends.map(e => e || undefined))
   const day = selectedDay ?? current.day
-  const content = contentFor(day, current.len)
+  const content = contentFor(day, current.len, periodLen)
   const isToday = day === current.day
 
   return (
@@ -183,6 +188,7 @@ export function Dashboard() {
           now={now}
           onDaySelect={(d) => setSelectedDay(d === current.day ? null : d)}
           onTrackingClick={setTrackingDate}
+          periodLen={periodLen}
         />
 
         {/* FOOTER */}
