@@ -32,7 +32,7 @@ export function Dashboard() {
       const [startsRes, profileRes] = await Promise.all([
         supabase
           .from('period_starts')
-          .select('start_date')
+          .select('start_date, end_date')
           .eq('user_id', user.id)
           .order('start_date', { ascending: false }),
         supabase.from('profiles').select('partner_name').eq('id', user.id).maybeSingle(),

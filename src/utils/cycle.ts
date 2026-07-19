@@ -98,11 +98,11 @@ export function avgLen(starts: Date[]): number {
 }
 
 /** Průměrná délka menstruace (3-7 dní typicky) */
-export function avgPeriodLen(starts: Date[], ends?: Date[]): number {
+export function avgPeriodLen(starts: Date[], ends?: (Date | null | undefined)[]): number {
   if (!ends || ends.length === 0) return 5 // default
   const lengths = starts
     .map((start, i) => {
-      const end = ends[i]
+      const end = ends?.[i]
       if (!end) return null
       return Math.round((mid(end) - mid(start)) / DAY)
     })
