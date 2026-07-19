@@ -23,6 +23,7 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
   const { user } = useAuth()
   const [notes, setNotes] = useState('')
   const [symptoms, setSymptoms] = useState<Set<string>>(new Set())
+  const [periodEnded, setPeriodEnded] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
@@ -33,7 +34,7 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
       if (!user) return
       setLoading(true)
 
-      const [notesRes, symptomsRes] = await Promise.all([
+      const [notesRes, symptomsRes, periodsRes] = await Promise.all([
         supabase
           .from('cycle_notes')
           .select('content')
@@ -45,6 +46,12 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
           .select('symptom')
           .eq('user_id', user.id)
           .eq('symptom_date', dateStr),
+        supabase
+          .from('period_starts')
+          .select('end_date')
+          .eq('start_date', dateStr)
+          .eq('user_id', user.id)
+          .maybeSingle(),
       ])
 
       if (notesRes.data?.content) {
@@ -53,6 +60,10 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
 
       if (symptomsRes.data) {
         setSymptoms(new Set(symptomsRes.data.map((s) => s.symptom)))
+      }
+
+      if (periodsRes.data?.end_date) {
+        setPeriodEnded(true)
       }
 
       setLoading(false)
@@ -76,6 +87,16 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
     setSaving(true)
 
     try {
+      // Update period end date if marked as ended
+      if (periodEnded) {
+        const { error } = await supabase
+          .from('period_starts')
+          .update({ end_date: dateStr })
+          .eq('user_id', user.id)
+          .eq('start_date', dateStr)
+        if (error) throw error
+      }
+
       // Save/update notes
       if (notes) {
         const { error } = await supabase
@@ -145,6 +166,21 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{fmt(date)}</h2>
+
+        <div style={{ marginTop: 24, marginBottom: 24, padding: '14px', borderRadius: '9px', background: 'var(--line)', border: '1px solid var(--line-2)' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', margin: 0 }}>
+            <input
+              type="checkbox"
+              checked={periodEnded}
+              onChange={(e) => setPeriodEnded(e.target.checked)}
+              style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--ink)' }}
+            />
+            <div>
+              <span style={{ fontWeight: 600, display: 'block' }}>Menstruace skončila</span>
+              <span style={{ fontSize: '12px', color: 'var(--ink-3)', display: 'block', marginTop: '2px' }}>Zaznamenat, že menstruace skončila dnes</span>
+            </div>
+          </label>
+        </div>
 
         <div style={{ marginTop: 24, marginBottom: 24 }}>
           <p className="eyebrow">Příznaky</p>
