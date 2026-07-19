@@ -18,7 +18,6 @@ const iso = (d: Date) => {
 
 export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: PeriodLogProps) {
   const [value, setValue] = useState(iso(new Date()))
-  const [endValue, setEndValue] = useState<string | null>(null)
 
   const sorted = [...starts].sort((a, b) => b.getTime() - a.getTime())
   const iv = intervals(starts)
@@ -116,7 +115,6 @@ export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: Peri
                   onClick={() => {
                     const today = new Date()
                     onEndAdd?.(d, today)
-                    setEndValue(null)
                   }}
                 >
                   Skončilo
