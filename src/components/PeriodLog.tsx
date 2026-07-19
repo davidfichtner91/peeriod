@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { avgLen, intervals, isOutlier, MIN_LEN, MAX_LEN } from '../utils/cycle'
+import { DatePicker } from './DatePicker'
 
 interface PeriodLogProps {
   starts: Date[]
@@ -37,13 +38,13 @@ export function PeriodLog({ starts, onAdd, onDelete }: PeriodLogProps) {
       </p>
 
       <div className="logbar">
-        <input
-          type="date"
-          className="input"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          aria-label="Datum začátku menstruace"
-        />
+        <div style={{ minWidth: 200 }}>
+          <DatePicker
+            id="periodlog-date"
+            value={value}
+            onChange={setValue}
+          />
+        </div>
         <button className="btn" onClick={() => add(new Date(value + 'T00:00:00'))}>
           Zaznamenat začátek
         </button>
