@@ -28,7 +28,7 @@ export function Settings() {
           .from('profiles')
           .select('partner_name')
           .eq('id', user.id)
-          .single(),
+          .maybeSingle(),
       ])
 
       if (startsRes.data?.length) {
@@ -55,23 +55,19 @@ export function Settings() {
     try {
       if (!user) throw new Error('User not found')
 
-      const [err1] = await Promise.all([
-        (async () => {
-          const { error } = await supabase
-            .from('period_starts')
-            .insert({
-              user_id: user.id,
-              start_date: startDate,
-            })
-          return error
-        })(),
-        (async () => {
-          await supabase
-            .from('profiles')
-            .update({ partner_name: partnerName })
-            .eq('id', user.id)
-        })(),
-      ])
+      // upsert, ne update: řádek v profiles nemusí existovat
+      const { error: profErr } = await supabase
+        .from('profiles')
+        .upsert({ id: user.id, partner_name: partnerName.trim() || null })
+      if (profErr) throw profErr
+
+      let err1: { code?: string; message?: string } | null = null
+      if (startDate) {
+        const { error } = await supabase
+          .from('period_starts')
+          .insert({ user_id: user.id, start_date: startDate })
+        err1 = error
+      }
 
       if (err1) {
         if (err1.code === '23505') {
