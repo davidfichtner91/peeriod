@@ -6,14 +6,12 @@
       <stop offset="100%" stop-color="#3b82f6"/>
     </linearGradient>
   </defs>
-  <!-- Bezpečný kruh uprostřed (maskable safe zone je 192 až 320) -->
-  <circle cx="256" cy="256" r="180" fill="url(#ig)"/>
-  <!-- Logo: kruh s šipkou -->
-  <g transform="translate(256,256)" fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="0" cy="0" r="60"/>
-    <path d="M 45 -45 L 80 -80"/>
-    <path d="M 60 -80 L 80 -80 L 80 -60"/>
-    <path d="M 0 60 L 0 100"/>
-    <path d="M -40 80 L 40 80"/>
+  <rect width="512" height="512" rx="114" fill="url(#ig)"/>
+  <g transform="translate(40,60) scale(2.8)" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="100" r="36"/>
+    <path d="M125.5 74.5 L162 38"/>
+    <path d="M140 38 H162 V60"/>
+    <path d="M100 136 V178"/>
+    <path d="M78 160 H122"/>
   </g>
 </svg>
