@@ -33,7 +33,7 @@ export function Dashboard() {
           .select('start_date')
           .eq('user_id', user.id)
           .order('start_date', { ascending: false }),
-        supabase.from('profiles').select('partner_name').eq('id', user.id).single(),
+        supabase.from('profiles').select('partner_name').eq('id', user.id).maybeSingle(),
       ])
 
       if (startsRes.data?.length) {
