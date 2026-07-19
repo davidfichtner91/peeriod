@@ -8,7 +8,7 @@ import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
 import { PeriodLog } from './PeriodLog'
 import { CalendarGrid } from './CalendarGrid'
-import { Glyph } from './Glyph'
+import { DayTrackingModal } from './DayTrackingModal'
 
 const isoOf = (d: Date) => {
   const p = (n: number) => String(n).padStart(2, '0')
@@ -23,6 +23,7 @@ export function Dashboard() {
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(true)
   const [now] = useState(() => new Date())
+  const [trackingDate, setTrackingDate] = useState<Date | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -181,6 +182,7 @@ export function Dashboard() {
           starts={starts}
           now={now}
           onDaySelect={(d) => setSelectedDay(d === current.day ? null : d)}
+          onTrackingClick={setTrackingDate}
         />
 
         {/* FOOTER */}
@@ -196,6 +198,14 @@ export function Dashboard() {
           </button>
         </footer>
       </div>
+
+      {trackingDate && (
+        <DayTrackingModal
+          date={trackingDate}
+          onClose={() => setTrackingDate(null)}
+          onSave={() => setTrackingDate(null)}
+        />
+      )}
     </div>
   )
 }

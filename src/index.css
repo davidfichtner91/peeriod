@@ -361,3 +361,45 @@ svg.ring:active {
 @media (prefers-reduced-motion: reduce) {
   .seg, .mark, .cell, .fade { transition: none; }
 }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+
+.modal {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 28px; max-width: 500px;
+  max-height: 90vh; overflow-y: auto; animation: modal-in .2s ease;
+}
+
+@keyframes modal-in {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal h2 { font-size: 20px; margin-bottom: 22px; }
+
+.symptom-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px; margin-bottom: 12px;
+}
+
+.symptom-checkbox {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-size: 13px; padding: 8px; border-radius: 8px;
+  transition: background .15s;
+}
+
+.symptom-checkbox:hover { background: var(--paper); }
+
+.symptom-checkbox input {
+  cursor: pointer; margin: 0; width: 18px; height: 18px;
+  accent-color: var(--ink);
+}
+
+.modal textarea { width: 100%; }

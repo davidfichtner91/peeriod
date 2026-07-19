@@ -7,6 +7,7 @@ interface CalendarGridProps {
   starts: Date[]
   now: Date
   onDaySelect: (day: number) => void
+  onTrackingClick?: (date: Date) => void
 }
 
 const MONTHS = [
@@ -18,7 +19,7 @@ const DOW = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne']
 const mid = (d: Date): number =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
-export function CalendarGrid({ starts, now, onDaySelect }: CalendarGridProps) {
+export function CalendarGrid({ starts, now, onDaySelect, onTrackingClick }: CalendarGridProps) {
   const [offset, setOffset] = useState(0)
   const phases = PHASES as Record<PhaseKey, Phase>
 
@@ -54,7 +55,10 @@ export function CalendarGrid({ starts, now, onDaySelect }: CalendarGridProps) {
           key={d}
           className={cls}
           style={{ ['--c' as string]: phase.color }}
-          onClick={() => onDaySelect(c.day)}
+          onClick={() => {
+            onDaySelect(c.day)
+            onTrackingClick?.(date)
+          }}
           aria-label={`${d}. ${MONTHS[first.getMonth()].toLowerCase()}, den ${c.day} — ${phase.name}${c.predicted ? ', předpověď' : ''}`}
         >
           <Glyph type={phase.glyph} color={phase.color} />
