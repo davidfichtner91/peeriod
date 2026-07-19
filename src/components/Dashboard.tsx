@@ -3,11 +3,13 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { cycleAt, contentFor } from '../utils/cycle'
 import { PHASES, FEELS } from '../data/phases'
-import { DashboardHeader } from './DashboardHeader'
+import { Logo } from './Logo'
+import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
 import { PeriodLog } from './PeriodLog'
 import { CalendarGrid } from './CalendarGrid'
+import { Glyph } from './Glyph'
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
@@ -35,8 +37,9 @@ export function Dashboard() {
       ])
 
       if (startsRes.data?.length) {
-        setStarts(startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')))
-        const c = cycleAt(now, startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00')), now)
+        const dates = startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00'))
+        setStarts(dates)
+        const c = cycleAt(now, dates, now)
         setSelectedDay(c.day)
       }
 
@@ -52,10 +55,11 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--paper)' }}>
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-line-2 border-t-ink rounded-full animate-spin mx-auto mb-4"></div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--paper)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '48px', height: '48px', border: '4px solid var(--line-2)', borderTopColor: 'var(--ink)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
           <p style={{ color: 'var(--ink-2)' }}>Načítám...</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       </div>
     )
@@ -63,16 +67,10 @@ export function Dashboard() {
 
   if (!starts.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--paper)' }}>
-        <div className="text-center">
-          <p style={{ color: 'var(--ink-2)' }} className="mb-4">
-            Nemáš žádný cyklus
-          </p>
-          <a
-            href="/onboarding"
-            className="underline font-medium"
-            style={{ color: 'var(--ink)' }}
-          >
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: 'var(--paper)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--ink-2)', marginBottom: '16px' }}>Nemáš žádný cyklus</p>
+          <a href="/onboarding" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>
             Vytvořit cyklus
           </a>
         </div>
@@ -86,13 +84,11 @@ export function Dashboard() {
   const handleAddStart = async (date: Date) => {
     if (!user) return
     const dateStr = date.toISOString().slice(0, 10)
-    const { error } = await supabase.from('period_starts').insert({
+    await supabase.from('period_starts').insert({
       user_id: user.id,
       start_date: dateStr,
     })
-    if (!error) {
-      setStarts([...starts, new Date(dateStr + 'T00:00:00')])
-    }
+    setStarts([...starts, new Date(dateStr + 'T00:00:00')])
   }
 
   const handleDeleteStart = async (date: Date) => {
@@ -107,43 +103,38 @@ export function Dashboard() {
   }
 
   return (
-    <div style={{ backgroundColor: 'var(--paper)', color: 'var(--ink)', minHeight: '100vh' }} className="font-body">
+    <div style={{ backgroundColor: 'var(--paper)', color: 'var(--ink)', minHeight: '100vh', fontFamily: 'var(--font-body)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 20px 72px' }}>
-        <DashboardHeader partnerName={partnerName} starts={starts} />
+        {/* HEADER */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '20px 0 26px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '11px' }}>
+            <Logo variant="gradient" size={34} />
+            <h1 style={{ fontSize: '19px', letterSpacing: '0.15em', fontWeight: 700, fontFamily: 'var(--font-display)', margin: 0 }}>
+              PEERIOD
+            </h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--ink-2)', margin: 0 }}>
+              Cyklus: <b style={{ color: 'var(--ink)', fontWeight: 600 }}>{partnerName || 'Partnerky'}</b> · průměr <span style={{ fontFamily: 'monospace' }}>28</span> dní
+            </p>
+            <ThemeSwitch />
+          </div>
+        </div>
 
-        <section
-          style={{
-            background: 'var(--card)',
-            border: '1px solid var(--line)',
-            borderRadius: 'var(--r)',
-            padding: '26px 28px',
-            display: 'grid',
-            gridTemplateColumns: '210px 1fr',
-            gap: '34px',
-            alignItems: 'center',
-            marginTop: '20px',
-          }}
-        >
+        {/* HERO */}
+        <section style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '26px 28px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: '34px', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <CycleRing
-              len={c.len}
-              selectedDay={selectedDay}
-              onDaySelect={setSelectedDay}
-              today={c.day}
-            />
+            <CycleRing len={c.len} selectedDay={selectedDay} onDaySelect={setSelectedDay} today={c.day} />
           </div>
           <div>
-            <button
-              onClick={() => setSelectedDay(c.day)}
-              hidden={selectedDay === c.day}
-              className="bg-none border-0 px-0 py-0 font-body text-sm underline cursor-pointer"
-              style={{
-                color: 'var(--ink-2)',
-                marginBottom: '12px',
-              }}
-            >
-              ← Zpět na dnešek
-            </button>
+            {selectedDay !== c.day && (
+              <button
+                onClick={() => setSelectedDay(c.day)}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontSize: '13px', color: 'var(--ink-2)', cursor: 'pointer', textDecoration: 'underline', textDecorationOffset: '3px', marginBottom: '12px', display: 'block' }}
+              >
+                ← Zpět na dnešek
+              </button>
+            )}
             <PhaseContent
               title={content.stage.title}
               lede={content.stage.lede}
@@ -154,16 +145,10 @@ export function Dashboard() {
           </div>
         </section>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '20px',
-            marginTop: '20px',
-          }}
-        >
+        {/* BIO + FEELS */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)', fontWeight: 600, margin: 0 }}>
               Co se děje v jejím těle
             </h3>
             <p style={{ margin: 0, color: 'var(--ink-2)', fontSize: '14px' }}>
@@ -171,21 +156,12 @@ export function Dashboard() {
             </p>
           </div>
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+            <h3 style={{ fontSize: '16px', marginBottom: '14px', fontFamily: 'var(--font-display)', fontWeight: 600, margin: 0 }}>
               Jak se může cítit
             </h3>
             <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', listStyle: 'none', margin: 0, padding: 0 }}>
               {content.feels.map((feel, idx) => (
-                <li
-                  key={idx}
-                  style={{
-                    fontSize: '13px',
-                    border: '1px solid var(--line-2)',
-                    borderRadius: '999px',
-                    padding: '5px 12px',
-                    color: 'var(--ink-2)',
-                  }}
-                >
+                <li key={idx} style={{ fontSize: '13px', border: '1px solid var(--line-2)', borderRadius: '999px', padding: '5px 12px', color: 'var(--ink-2)' }}>
                   {feel[0]}
                   <i style={{ fontStyle: 'normal', color: 'var(--ink-3)', marginLeft: '6px', fontSize: '11px' }}>
                     {feel[1]}
@@ -193,26 +169,23 @@ export function Dashboard() {
                 </li>
               ))}
             </ul>
-            <p style={{ fontSize: '12.5px', color: 'var(--ink-3)', lineHeight: 1.55, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
+            <p style={{ fontSize: '12.5px', color: 'var(--ink-3)', lineHeight: 1.55, marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)', margin: '20px 0 0 0' }}>
               Orientační, ne diagnóza. Každý cyklus je jiný — ptej se místo domýšlení.
             </p>
           </div>
         </div>
 
-        <PeriodLog
-          starts={starts}
-          onAdd={handleAddStart}
-          onDelete={handleDeleteStart}
-          onToday={() => handleAddStart(new Date())}
-        />
+        {/* PERIOD LOG */}
+        <PeriodLog starts={starts} onAdd={handleAddStart} onDelete={handleDeleteStart} onToday={() => handleAddStart(new Date())} />
 
+        {/* CALENDAR */}
         <CalendarGrid starts={starts} onDaySelect={setSelectedDay} now={now} />
 
+        {/* FOOTER */}
         <footer style={{ marginTop: '32px', fontSize: '12.5px', color: 'var(--ink-3)', textAlign: 'center' }}>
           <button
             onClick={signOut}
-            className="bg-none border-0 font-body text-sm cursor-pointer underline"
-            style={{ color: 'var(--ink-3)', textDecoration: 'underline', textDecorationColor: 'var(--ink-3)' } as any}
+            style={{ background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', color: 'var(--ink-3)', textDecoration: 'underline', textDecorationOffset: '3px' }}
           >
             Odhlásit se
           </button>
