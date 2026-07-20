@@ -116,7 +116,7 @@ export function avgPeriodLen(starts: Date[], ends?: (Date | null | undefined)[])
 export function cycleAt(
   date: Date,
   starts: Date[],
-  ends?: (Date | null)[],
+  _ends?: (Date | null)[],
   now: Date = new Date()
 ): CycleInfo {
   const L = avgLen(starts)
