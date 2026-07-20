@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cycleAt, contentFor, avgLen, avgPeriodLen } from '../utils/cycle'
+import { cycleAt, contentFor, avgLen } from '../utils/cycle'
 import { Logo } from './Logo'
 import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
