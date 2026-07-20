@@ -128,11 +128,10 @@ export function cycleAt(
   for (let i = s.length - 1; i >= 0; i--) {
     const st = mid(s[i])
     if (t >= st) {
-      // Příští cyklus začíná: start[i] + L dní (ne start[i+1])
-      // Když máme konec zaznamenán, i bez dalšího začátku vědíme, kdy by měl být další cyklus
       let next = s[i + 1] ? mid(s[i + 1]) : null
+
+      // Když není zaznamenán další začátek, počítáme, že příští menstruace bude L dní od začátku
       if (next === null) {
-        // Příští menstruace = začátek tohoto cyklu + průměrná délka cyklu
         next = st + L * DAY
       }
 
@@ -143,17 +142,13 @@ export function cycleAt(
           predicted: false,
         }
       }
-      if (next === null) {
-        const off = Math.round((t - st) / DAY)
-        return { day: (off % L) + 1, len: L, predicted: t > mid(now) }
-      }
     }
   }
 
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
   const st = mid(s[0])
   const off = Math.round((t - st) / DAY)
-  return { day: (((off % L) + L) % L) + 1, len: L, predicted: true }
+  return { day: (((off % L) + L) % L) + 1, len: L, predicted: t > mid(now) }
 }
 
 export function isStart(date: Date, starts: Date[]): boolean {

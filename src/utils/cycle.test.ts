@@ -95,31 +95,31 @@ describe('cycleAt', () => {
   const now = d('2026-07-19')
 
   it('den začátku menstruace je 1. den cyklu', () => {
-    expect(cycleAt(d('2026-07-02'), starts, now).day).toBe(1)
+    expect(cycleAt(d('2026-07-02'), starts, undefined, now).day).toBe(1)
   })
 
   it('dnešek spadá do probíhajícího cyklu', () => {
-    const c = cycleAt(now, starts, now)
+    const c = cycleAt(now, starts, undefined, now)
     expect(c.day).toBe(18)
     expect(c.predicted).toBe(false)
   })
 
   it('uzavřený cyklus používá skutečnou délku, ne průměr', () => {
-    const c = cycleAt(d('2026-06-20'), starts, now)
+    const c = cycleAt(d('2026-06-20'), starts, undefined, now)
     expect(c.len).toBe(26) // 6. 6. → 2. 7.
     expect(c.predicted).toBe(false)
   })
 
   it('budoucnost je označená jako předpověď', () => {
-    expect(cycleAt(d('2026-08-15'), starts, now).predicted).toBe(true)
+    expect(cycleAt(d('2026-08-15'), starts, undefined, now).predicted).toBe(true)
   })
 
   it('datum před prvním záznamem je taky jen odhad', () => {
-    expect(cycleAt(d('2026-05-01'), starts, now).predicted).toBe(true)
+    expect(cycleAt(d('2026-05-01'), starts, undefined, now).predicted).toBe(true)
   })
 
   it('bez záznamů nespadne', () => {
-    const c = cycleAt(now, [], now)
+    const c = cycleAt(now, [], undefined, now)
     expect(c.day).toBe(1)
     expect(c.len).toBe(28)
   })
