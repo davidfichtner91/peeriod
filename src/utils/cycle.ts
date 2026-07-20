@@ -124,16 +124,21 @@ export function cycleAt(
   const avgMenLen = avgPeriodLen(starts, ends)
   if (!starts.length) return { day: 1, len: L, menLen: avgMenLen, predicted: true }
 
-  const s = [...starts].sort((a, b) => a.getTime() - b.getTime())
+  // Seřaď starts a ends pohromadě (aby indexy seděly)
+  const paired = starts.map((s, i) => ({ start: s, end: ends?.[i] || null }))
+  const sorted = [...paired].sort((a, b) => a.start.getTime() - b.start.getTime())
+
   const t = mid(date)
 
-  for (let i = s.length - 1; i >= 0; i--) {
-    const st = mid(s[i])
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    const st = mid(sorted[i].start)
     if (t >= st) {
-      const next = s[i + 1] ? mid(s[i + 1]) : null
+      const nextStart = sorted[i + 1]?.start
+      const next = nextStart ? mid(nextStart) : null
+
       if (next !== null && t < next) {
         // Aktuální cyklus: použijeme skutečnou délku menstruace, když ji máme
-        const endDate = ends?.[i]
+        const endDate = sorted[i].end
         const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) : avgMenLen
         return {
           day: Math.round((t - st) / DAY) + 1,
@@ -151,7 +156,7 @@ export function cycleAt(
   }
 
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
-  const st = mid(s[0])
+  const st = mid(sorted[0].start)
   const off = Math.round((t - st) / DAY)
   return { day: (((off % L) + L) % L) + 1, len: L, menLen: avgMenLen, predicted: true }
 }
