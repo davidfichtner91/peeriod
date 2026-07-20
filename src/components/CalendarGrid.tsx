@@ -5,6 +5,7 @@ import { Glyph } from './Glyph'
 
 interface CalendarGridProps {
   starts: Date[]
+  ends?: (Date | null)[]
   now: Date
   onDaySelect: (day: number) => void
   onTrackingClick?: (date: Date) => void
@@ -20,7 +21,7 @@ const DOW = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne']
 const mid = (d: Date): number =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
-export function CalendarGrid({ starts, now, onDaySelect, onTrackingClick, periodLen = 5 }: CalendarGridProps) {
+export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick, periodLen = 5 }: CalendarGridProps) {
   const [offset, setOffset] = useState(0)
   const phases = PHASES as Record<PhaseKey, Phase>
 
@@ -37,7 +38,7 @@ export function CalendarGrid({ starts, now, onDaySelect, onTrackingClick, period
 
     for (let d = 1; d <= dim; d++) {
       const date = new Date(first.getFullYear(), first.getMonth(), d)
-      const c = cycleAt(date, starts, now)
+      const c = cycleAt(date, starts, ends, now)
       const phase = phaseFor(c.day, c.len, periodLen)
       const startish = isStart(date, starts) || (c.predicted && c.day === 1)
       const isToday = mid(date) === mid(now)

@@ -89,92 +89,88 @@ export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: Peri
           const dayLen = hasEnd
             ? Math.round((endDate.getTime() - d.getTime()) / 864e5)
             : null
+          const isEditing = endingStart?.getTime() === d.getTime()
 
           return (
-            <li key={iso(d)} style={{ opacity: hasEnd ? 0.9 : 1 }}>
-              <time dateTime={iso(d)}>{fmt(d)}</time>
-              <span className="len">
-                {hasEnd ? (
-                  <>
-                    {fmt(endDate)} <span style={{ fontSize: '12px', color: 'var(--ink-3)' }}>({dayLen}d)</span>
-                  </>
-                ) : (
-                  n === null ? 'první záznam' : `cyklus ${n} dní`
-                )}
-              </span>
-              {n !== null && isOutlier(n) && !hasEnd && (
-                <span
-                  className="flag"
-                  title={`Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá`}
-                >
-                  mimo průměr
-                </span>
-              )}
-              {!hasEnd && (
-                <>
-                  {endingStart?.getTime() === d.getTime() ? (
-                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-                      <div style={{ minWidth: '100px' }}>
-                        <DatePicker
-                          id={`end-date-${iso(d)}`}
-                          value={endingDate || iso(new Date())}
-                          onChange={setEndingDate}
-                        />
-                      </div>
-                      <button
-                        className="btn"
-                        style={{ fontSize: '12px', padding: '4px 8px' }}
-                        onClick={() => {
-                          if (endingDate) {
-                            onEndAdd?.(d, new Date(endingDate + 'T00:00:00'))
-                            setEndingDate(null)
-                            setEndingStart(null)
-                          }
-                        }}
-                      >
-                        OK
-                      </button>
-                      <button
-                        className="btn ghost"
-                        style={{ fontSize: '12px', padding: '4px 8px' }}
-                        onClick={() => {
-                          setEndingDate(null)
-                          setEndingStart(null)
-                        }}
-                      >
-                        Zrušit
-                      </button>
-                    </div>
+            <div key={iso(d)}>
+              <li style={{ opacity: hasEnd ? 0.9 : 1 }}>
+                <time dateTime={iso(d)}>{fmt(d)}</time>
+                <span className="len">
+                  {hasEnd ? (
+                    <>
+                      {fmt(endDate)} <span style={{ fontSize: '12px', color: 'var(--ink-3)' }}>({dayLen}d)</span>
+                    </>
                   ) : (
-                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-                      <button
-                        className="btn"
-                        style={{ fontSize: '12px', padding: '4px 8px' }}
-                        onClick={() => {
-                          setEndingDate(iso(d))
-                          setEndingStart(d)
-                        }}
-                      >
-                        Zaznamenat konec
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ fontSize: '12px', padding: '4px 8px' }}
-                        onClick={() => {
-                          const today = new Date()
-                          onEndAdd?.(d, today)
-                        }}
-                      >
-                        Skončilo dnes
-                      </button>
-                    </div>
+                    n === null ? 'první záznam' : `cyklus ${n} dní`
                   )}
-                </>
+                </span>
+                {n !== null && isOutlier(n) && !hasEnd && (
+                  <span
+                    className="flag"
+                    title={`Mimo rozsah ${MIN_LEN}–${MAX_LEN} dní, do průměru se nepočítá`}
+                  >
+                    mimo průměr
+                  </span>
+                )}
+                <button className="del" onClick={() => onDelete(d)}>
+                  Smazat
+                </button>
+              </li>
+
+              {!hasEnd && !isEditing && (
+                <div className="logbar" style={{ margin: '8px 0' }}>
+                  <button className="btn" onClick={() => {
+                    setEndingDate(iso(d))
+                    setEndingStart(d)
+                  }}>
+                    Zaznamenat konec
+                  </button>
+                  <button className="btn ghost" onClick={() => {
+                    onEndAdd?.(d, new Date())
+                  }}>
+                    Skončilo dnes
+                  </button>
+                </div>
               )}
-              <button className="del" onClick={() => onDelete(d)}>
-                Smazat
-              </button>
-            </li>
+
+              {isEditing && (
+                <div className="logbar" style={{ margin: '8px 0' }}>
+                  <div style={{ minWidth: 200 }}>
+                    <DatePicker
+                      id={`end-date-${iso(d)}`}
+                      value={endingDate || iso(new Date())}
+                      onChange={setEndingDate}
+                    />
+                  </div>
+                  <button className="btn" onClick={() => {
+                    if (endingDate) {
+                      onEndAdd?.(d, new Date(endingDate + 'T00:00:00'))
+                      setEndingDate(null)
+                      setEndingStart(null)
+                    }
+                  }}>
+                    OK
+                  </button>
+                  <button className="btn ghost" onClick={() => {
+                    setEndingDate(null)
+                    setEndingStart(null)
+                  }}>
+                    Zrušit
+                  </button>
+                </div>
+              )}
+
+              {hasEnd && !isEditing && (
+                <div className="logbar" style={{ margin: '8px 0' }}>
+                  <button className="btn ghost" onClick={() => {
+                    setEndingDate(iso(endDate))
+                    setEndingStart(d)
+                  }}>
+                    Upravit konec
+                  </button>
+                </div>
+              )}
+            </div>
           )
         })}
       </ul>
