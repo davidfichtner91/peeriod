@@ -134,7 +134,7 @@ export function cycleAt(
       if (next !== null && t < next) {
         // Aktuální cyklus: použijeme skutečnou délku menstruace, když ji máme
         const endDate = ends?.[i]
-        const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) + 1 : avgMenLen
+        const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) : avgMenLen
         return {
           day: Math.round((t - st) / DAY) + 1,
           len: Math.round((next - st) / DAY),
