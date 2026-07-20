@@ -17,6 +17,7 @@ export interface Stage {
 
 export interface Phase {
   name: string
+  description: string
   color: string
   glyph: GlyphType
   feels: Pair[]

@@ -1,6 +1,7 @@
 export const PHASES = {
   mens: {
     name: 'Menstruace',
+    description: 'Vyprázdnění sliznice. Obvykle 3–7 dní. Nejintenzivnější jsou první 2 dny.',
     color: 'var(--p-mens)',
     glyph: 'disc',
     feels: [
@@ -77,6 +78,7 @@ export const PHASES = {
 
   foli: {
     name: 'Folikulární fáze',
+    description: 'Příprava na ovulaci. Obvykle 9–14 dní. Energie a soustředění stoupají. Nejlepší čas pro nové projekty.',
     color: 'var(--p-foli)',
     glyph: 'ring',
     feels: [
@@ -156,6 +158,7 @@ export const PHASES = {
 
   ovul: {
     name: 'Ovulace',
+    description: 'Vypuštění vajíčka. Krátké okno 1–2 dny. Nejvyšší energie, sebevědomí a sexuální přitažlivost.',
     color: 'var(--p-ovul)',
     glyph: 'diamond',
     feels: [
@@ -231,6 +234,7 @@ export const PHASES = {
 
   lute: {
     name: 'Luteální fáze',
+    description: 'Po ovulaci. Obvykle 12–14 dní. Stabilní, ale postupně se vracejí příznaky před menstruací.',
     color: 'var(--p-lute)',
     glyph: 'half',
     feels: [
