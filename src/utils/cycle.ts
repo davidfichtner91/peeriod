@@ -26,6 +26,7 @@ export interface Phase {
 export interface CycleInfo {
   day: number
   len: number
+  menLen: number
   predicted: boolean
 }
 
@@ -116,10 +117,12 @@ export function avgPeriodLen(starts: Date[], ends?: (Date | null | undefined)[])
 export function cycleAt(
   date: Date,
   starts: Date[],
+  ends?: (Date | null)[],
   now: Date = new Date()
 ): CycleInfo {
   const L = avgLen(starts)
-  if (!starts.length) return { day: 1, len: L, predicted: true }
+  const avgMenLen = avgPeriodLen(starts, ends)
+  if (!starts.length) return { day: 1, len: L, menLen: avgMenLen, predicted: true }
 
   const s = [...starts].sort((a, b) => a.getTime() - b.getTime())
   const t = mid(date)
@@ -129,15 +132,20 @@ export function cycleAt(
     if (t >= st) {
       const next = s[i + 1] ? mid(s[i + 1]) : null
       if (next !== null && t < next) {
+        // Aktuální cyklus: použijeme skutečnou délku menstruace, když ji máme
+        const endDate = ends?.[i]
+        const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) + 1 : avgMenLen
         return {
           day: Math.round((t - st) / DAY) + 1,
           len: Math.round((next - st) / DAY),
+          menLen,
           predicted: false,
         }
       }
       if (next === null) {
         const off = Math.round((t - st) / DAY)
-        return { day: (off % L) + 1, len: L, predicted: t > mid(now) }
+        // Budoucí cyklus: máme jen průměr
+        return { day: (off % L) + 1, len: L, menLen: avgMenLen, predicted: t > mid(now) }
       }
     }
   }
@@ -145,7 +153,7 @@ export function cycleAt(
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
   const st = mid(s[0])
   const off = Math.round((t - st) / DAY)
-  return { day: (((off % L) + L) % L) + 1, len: L, predicted: true }
+  return { day: (((off % L) + L) % L) + 1, len: L, menLen: avgMenLen, predicted: true }
 }
 
 export function isStart(date: Date, starts: Date[]): boolean {

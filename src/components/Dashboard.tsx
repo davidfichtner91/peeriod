@@ -127,10 +127,9 @@ export function Dashboard() {
     )
   }
 
-  const current = cycleAt(now, starts, now)
-  const periodLen = avgPeriodLen(starts, ends.map(e => e || undefined))
+  const current = cycleAt(now, starts, ends, now)
   const day = selectedDay ?? current.day
-  const content = contentFor(day, current.len, periodLen)
+  const content = contentFor(day, current.len, current.menLen)
   const isToday = day === current.day
 
   return (
@@ -215,10 +214,10 @@ export function Dashboard() {
 
         <CalendarGrid
           starts={starts}
+          ends={ends}
           now={now}
           onDaySelect={(d) => setSelectedDay(d === current.day ? null : d)}
           onTrackingClick={setTrackingDate}
-          periodLen={periodLen}
         />
 
         {/* FOOTER */}
