@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { cycleAt, isStart, phaseFor, ORDER, PhaseKey, Phase } from '../utils/cycle'
 import { PHASES } from '../data/phases'
 import { Glyph } from './Glyph'
+import { PhaseTooltip } from './PhaseTooltip'
 
 interface CalendarGridProps {
   starts: Date[]
@@ -87,9 +88,11 @@ export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick }
         <h3>Kalendář</h3>
         <ul className="legend">
           {ORDER.map((k) => (
-            <li key={k} title={phases[k].description}>
-              <Glyph type={phases[k].glyph} color={phases[k].color} />
-              {phases[k].name}
+            <li key={k}>
+              <PhaseTooltip name={phases[k].name} description={phases[k].description}>
+                <Glyph type={phases[k].glyph} color={phases[k].color} />
+                <span>{phases[k].name}</span>
+              </PhaseTooltip>
             </li>
           ))}
         </ul>
