@@ -116,7 +116,6 @@ export function avgPeriodLen(starts: Date[], ends?: (Date | null | undefined)[])
 export function cycleAt(
   date: Date,
   starts: Date[],
-  _ends?: (Date | null)[],
   now: Date = new Date()
 ): CycleInfo {
   const L = avgLen(starts)
@@ -128,13 +127,7 @@ export function cycleAt(
   for (let i = s.length - 1; i >= 0; i--) {
     const st = mid(s[i])
     if (t >= st) {
-      let next = s[i + 1] ? mid(s[i + 1]) : null
-
-      // Když není zaznamenán další začátek, počítáme, že příští menstruace bude L dní od začátku
-      if (next === null) {
-        next = st + L * DAY
-      }
-
+      const next = s[i + 1] ? mid(s[i + 1]) : null
       if (next !== null && t < next) {
         return {
           day: Math.round((t - st) / DAY) + 1,
@@ -142,13 +135,17 @@ export function cycleAt(
           predicted: false,
         }
       }
+      if (next === null) {
+        const off = Math.round((t - st) / DAY)
+        return { day: (off % L) + 1, len: L, predicted: t > mid(now) }
+      }
     }
   }
 
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
   const st = mid(s[0])
   const off = Math.round((t - st) / DAY)
-  return { day: (((off % L) + L) % L) + 1, len: L, predicted: t > mid(now) }
+  return { day: (((off % L) + L) % L) + 1, len: L, predicted: true }
 }
 
 export function isStart(date: Date, starts: Date[]): boolean {
