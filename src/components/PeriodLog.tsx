@@ -57,26 +57,10 @@ export function PeriodLog({ starts, ends = [], onAdd, onDelete, onEndAdd }: Peri
         </button>
       </div>
 
-      <div className="stats">
-        <div className="stat">
-          <b className="tnum">{avgLen(starts)}</b>
-          <span>průměrná délka</span>
-        </div>
-        <div className="stat">
-          <b className="tnum">{spread}</b>
-          <span>rozptyl (dní)</span>
-        </div>
-        <div className="stat">
-          <b className="tnum">{starts.length}</b>
-          <span>záznamů</span>
-        </div>
-        {skipped > 0 && (
-          <div className="stat">
-            <b className="tnum">{skipped}</b>
-            <span>mimo průměr</span>
-          </div>
-        )}
-      </div>
+      <p className="note note--plain" style={{ fontSize: '13px', marginBottom: 12 }}>
+        Průměr: <b>{avgLen(starts)} dní</b> · Rozptyl: <b>{spread}</b> · Záznamů: <b>{starts.length}</b>
+        {skipped > 0 && ` · Mimo průměr: ${skipped}`}
+      </p>
 
       <ul className="log">
         {sorted.map((d, i) => {

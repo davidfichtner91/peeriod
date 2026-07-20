@@ -4,6 +4,9 @@ export function UpdatePrompt() {
   const [showUpdate, setShowUpdate] = useState(false)
 
   useEffect(() => {
+    // PWA je jen v produkci
+    if (import.meta.env.DEV) return
+
     // Načti service worker z Vite PWA pluginu
     const checkForUpdates = async () => {
       if (!navigator.serviceWorker) return
