@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cycleAt, contentFor, avgLen } from '../utils/cycle'
+import { cycleAt, contentFor, avgLen, intervals, isOutlier } from '../utils/cycle'
 import { Logo } from './Logo'
 import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
-import { PeriodLog } from './PeriodLog'
 import { CalendarGrid } from './CalendarGrid'
 import { DayTrackingModal } from './DayTrackingModal'
 
@@ -83,24 +82,6 @@ export function Dashboard() {
         newEnds[idx] = new Date(endStr + 'T00:00:00')
         setEnds(newEnds)
       }
-    }
-  }
-
-  const deleteStart = async (date: Date) => {
-    if (!user) return
-    const dateStr = isoOf(date)
-    const { error } = await supabase
-      .from('period_starts')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('start_date', dateStr)
-    if (!error) {
-      const idx = starts.findIndex((s) => isoOf(s) === dateStr)
-      const newStarts = starts.filter((s) => isoOf(s) !== dateStr)
-      const newEnds = ends.filter((_, i) => i !== idx)
-      setStarts(newStarts)
-      setEnds(newEnds)
-      setSelectedDay(null)
     }
   }
 
@@ -204,13 +185,43 @@ export function Dashboard() {
           </div>
         </div>
 
-        <PeriodLog
-          starts={starts}
-          ends={ends}
-          onAdd={addStart}
-          onDelete={deleteStart}
-          onEndAdd={addEnd}
-        />
+        {/* Stats card */}
+        {(() => {
+          const iv = intervals(starts)
+          const used = iv.filter((n) => !isOutlier(n))
+          const spread = used.length > 1 ? `${Math.min(...used)}–${Math.max(...used)}` : '—'
+          const menLengths = starts
+            .map((_, i) => ends[i])
+            .filter((e): e is Date => e !== null && e !== undefined)
+            .map((e, i) => Math.round((e.getTime() - starts[i].getTime()) / 864e5))
+          const menAvg = menLengths.length > 0 ? Math.round(menLengths.reduce((a, b) => a + b, 0) / menLengths.length) : null
+
+          return (
+            <div className="card" style={{ marginBottom: 20 }}>
+              <h3>Přehled</h3>
+              <div className="stats">
+                <div className="stat">
+                  <b className="tnum">{avgLen(starts)}</b>
+                  <span>průměrná délka cyklu (dní)</span>
+                </div>
+                <div className="stat">
+                  <b className="tnum">{spread}</b>
+                  <span>rozptyl (dní)</span>
+                </div>
+                <div className="stat">
+                  <b className="tnum">{starts.length}</b>
+                  <span>záznamů</span>
+                </div>
+                {menAvg && (
+                  <div className="stat">
+                    <b className="tnum">{menAvg}</b>
+                    <span>průměrná délka menstruace (dní)</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })()}
 
         <CalendarGrid
           starts={starts}
@@ -239,6 +250,10 @@ export function Dashboard() {
           date={trackingDate}
           onClose={() => setTrackingDate(null)}
           onSave={() => setTrackingDate(null)}
+          starts={starts}
+          ends={ends}
+          onPeriodStart={addStart}
+          onPeriodEnd={addEnd}
         />
       )}
     </div>

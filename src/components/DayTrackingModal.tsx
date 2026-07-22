@@ -17,14 +17,19 @@ interface DayTrackingModalProps {
   date: Date
   onClose: () => void
   onSave?: () => void
+  starts?: Date[]
+  ends?: (Date | null)[]
+  onPeriodStart?: (date: Date) => void
+  onPeriodEnd?: (startDate: Date, endDate: Date) => void
 }
 
-export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProps) {
+export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = [], onPeriodStart, onPeriodEnd }: DayTrackingModalProps) {
   const { user } = useAuth()
   const [notes, setNotes] = useState('')
   const [symptoms, setSymptoms] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [recordingPeriod, setRecordingPeriod] = useState(false)
 
   const dateStr = date.toISOString().split('T')[0]
 
@@ -141,10 +146,67 @@ export function DayTrackingModal({ date, onClose, onSave }: DayTrackingModalProp
     return d.toLocaleDateString('cs-CZ', opts)
   }
 
+  const iso = (d: Date) => {
+    const p = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+  }
+
+  const hasStartToday = starts.some((s) => iso(s) === iso(date))
+  const lastUnclosed = starts.reduce((acc, s, i) => {
+    const end = ends[i]
+    return (!end && (!acc || s.getTime() > acc.getTime())) ? s : acc
+  }, null as Date | null)
+
+  const handleRecordStart = async () => {
+    if (!onPeriodStart) return
+    setRecordingPeriod(true)
+    try {
+      onPeriodStart(date)
+      onSave?.()
+      onClose()
+    } finally {
+      setRecordingPeriod(false)
+    }
+  }
+
+  const handleRecordEnd = async () => {
+    if (!onPeriodEnd || !lastUnclosed) return
+    setRecordingPeriod(true)
+    try {
+      onPeriodEnd(lastUnclosed, date)
+      onSave?.()
+      onClose()
+    } finally {
+      setRecordingPeriod(false)
+    }
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{fmt(date)}</h2>
+
+        <div style={{ marginTop: 24, marginBottom: 24 }}>
+          <p className="eyebrow">Menstruace</p>
+          <div className="logbar">
+            <button
+              className="btn"
+              onClick={handleRecordStart}
+              disabled={recordingPeriod || hasStartToday}
+              title={hasStartToday ? 'Záznam pro tento den už existuje' : ''}
+            >
+              Zaznamenat začátek
+            </button>
+            <button
+              className="btn ghost"
+              onClick={handleRecordEnd}
+              disabled={recordingPeriod || !lastUnclosed}
+              title={!lastUnclosed ? 'Není otevřený záznam' : ''}
+            >
+              Zaznamenat konec
+            </button>
+          </div>
+        </div>
 
         <div style={{ marginTop: 24, marginBottom: 24 }}>
           <p className="eyebrow">Příznaky</p>
