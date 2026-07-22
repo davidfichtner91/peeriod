@@ -190,11 +190,15 @@ export function Dashboard() {
           const iv = intervals(starts)
           const used = iv.filter((n) => !isOutlier(n))
           const spread = used.length > 1 ? `${Math.min(...used)}–${Math.max(...used)}` : '—'
-          const menLengths = starts
-            .map((_, i) => ends[i])
-            .filter((e): e is Date => e !== null && e !== undefined)
-            .map((e, i) => Math.round((e.getTime() - starts[i].getTime()) / 864e5))
+
+          // Calculate menstruation lengths only for completed periods (those with end_date)
+          const completedPeriods = starts
+            .map((start, i) => ({ start, end: ends[i], i }))
+            .filter((p) => p.end !== null && p.end !== undefined)
+          const menLengths = completedPeriods.map((p) => Math.round((p.end!.getTime() - p.start.getTime()) / 864e5))
           const menAvg = menLengths.length > 0 ? Math.round(menLengths.reduce((a, b) => a + b, 0) / menLengths.length) : null
+
+          const fmt = (d: Date) => `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`
 
           return (
             <div className="card" style={{ marginBottom: 20 }}>
@@ -219,6 +223,35 @@ export function Dashboard() {
                   </div>
                 )}
               </div>
+
+              {starts.length > 0 && (
+                <details style={{ marginTop: 16 }}>
+                  <summary style={{ cursor: 'pointer', fontSize: '14px', fontWeight: 500, color: 'var(--ink)', userSelect: 'none' }}>
+                    Všechny záznamy ({starts.length})
+                  </summary>
+                  <ul className="log" style={{ marginTop: 12 }}>
+                    {[...starts].reverse().map((start, i) => {
+                      const idx = starts.length - 1 - i
+                      const end = ends[idx]
+                      const len = end ? Math.round((end.getTime() - start.getTime()) / 864e5) : null
+                      return (
+                        <li key={isoOf(start)} style={{ opacity: end ? 0.9 : 0.6 }}>
+                          <time dateTime={isoOf(start)}>{fmt(start)}</time>
+                          <span className="len">
+                            {end ? (
+                              <>
+                                {fmt(end)} <span style={{ fontSize: '12px', color: 'var(--ink-3)' }}>({len}d)</span>
+                              </>
+                            ) : (
+                              <span style={{ fontStyle: 'italic', color: 'var(--ink-3)' }}>čeká na konec</span>
+                            )}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </details>
+              )}
             </div>
           )
         })()}
