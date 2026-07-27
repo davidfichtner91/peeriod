@@ -11,6 +11,8 @@ const SYMPTOMS = [
   'Bolest hlavy',
   'Nespavost',
   'Zvýšené libido',
+  'Citlivost/plačtivost',
+  'Podrážděnost',
 ]
 
 interface DayTrackingModalProps {
