@@ -24,7 +24,7 @@ export function Dashboard() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [now] = useState(() => new Date())
+  const now = new Date()
   const [trackingDate, setTrackingDate] = useState<Date | null>(null)
   const [allNotes, setAllNotes] = useState<Array<{ date: Date; content: string }>>([])
 
