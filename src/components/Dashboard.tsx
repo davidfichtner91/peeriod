@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { cycleAt, contentFor, avgLen, intervals, isOutlier } from '../utils/cycle'
+import { phaseRecommendations } from '../data/phaseRecommendations'
 import { Logo } from './Logo'
 import { ThemeSwitch } from './ThemeSwitch'
 import { CycleRing } from './CycleRing'
@@ -159,6 +160,8 @@ export function Dashboard() {
               tips={content.stage.tips}
               fadeKey={content.stage.title}
               animate={!dragging}
+              phaseKey={content.key}
+              recommendations={phaseRecommendations[content.key]}
             />
           </div>
         </section>
