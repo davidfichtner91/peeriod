@@ -47,7 +47,7 @@ export function PhaseContent({
   }, [fadeKey, animate])
 
   const noteInsight = cycleDay && allNotes.length > 0 ? getNotesForCycleDay(new Date(), cycleDay, starts, allNotes) : null
-  const ledeWithInsight = noteInsight ? `${lede} V tyto dny sis poznamenal, že partnerka prohlásila: "${noteInsight}". 🙂` : lede
+  const ledeWithInsight = noteInsight ? `${lede} V tyto dny sis poznamenal, že partnerka prohlásila: "přijde si ${noteInsight}". 🙂` : lede
 
   return (
     <div className={`fade${out ? ' out' : ''}`}>

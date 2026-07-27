@@ -142,7 +142,7 @@ export function cycleAt(
         const endDate = sorted[i].end
         const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) : avgMenLen
         return {
-          day: Math.round((t - st) / DAY) + 1,
+          day: Math.floor((t - st) / DAY) + 1,
           len: Math.round((next - st) / DAY),
           menLen,
           predicted: false,
