@@ -21,7 +21,7 @@ export const phaseRecommendations: Record<string, PhaseActivities> = {
       ],
       avoid: [
         'Intenzivní kardio',
-        'Těžký силовой trénink',
+        'Těžký silový trénink',
         'Vysokoimpaktové cvičení',
         'Nové extrémní sporty',
       ],

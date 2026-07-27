@@ -143,26 +143,28 @@ export function Dashboard() {
             }}
           />
 
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
             {!isToday && (
               <button className="back" onClick={() => setSelectedDay(null)}>
                 ← Zpět na dnešek
               </button>
             )}
-            <PhaseContent
-              eyebrow={
-                isToday
-                  ? `Dnes · ${content.phase.name}`
-                  : `Den ${day} · ${content.phase.name} (${content.from}.–${content.to}. den)`
-              }
-              title={content.stage.title}
-              lede={content.stage.lede}
-              tips={content.stage.tips}
-              fadeKey={content.stage.title}
-              animate={!dragging}
-              phaseKey={content.key}
-              recommendations={phaseRecommendations[content.key]}
-            />
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: 8 }}>
+              <PhaseContent
+                eyebrow={
+                  isToday
+                    ? `Dnes · ${content.phase.name}`
+                    : `Den ${day} · ${content.phase.name} (${content.from}.–${content.to}. den)`
+                }
+                title={content.stage.title}
+                lede={content.stage.lede}
+                tips={content.stage.tips}
+                fadeKey={content.stage.title}
+                animate={!dragging}
+                phaseKey={content.key}
+                recommendations={phaseRecommendations[content.key]}
+              />
+            </div>
           </div>
         </section>
 
