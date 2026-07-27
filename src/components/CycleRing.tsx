@@ -4,6 +4,7 @@ import { Glyph } from './Glyph'
 
 interface CycleRingProps {
   len: number
+  menLen: number
   selectedDay: number
   today: number
   onDaySelect: (day: number) => void
@@ -19,7 +20,7 @@ const pt = (a: number, r: number): [number, number] => [
   CY + r * Math.sin(((a - 90) * Math.PI) / 180),
 ]
 
-export function CycleRing({ len, selectedDay, today, onDaySelect }: CycleRingProps) {
+export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: CycleRingProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
   const STEP = 360 / len
@@ -35,16 +36,16 @@ export function CycleRing({ len, selectedDay, today, onDaySelect }: CycleRingPro
     return {
       day,
       d,
-      color: colorOf(day, len),
+      color: colorOf(day, len, menLen),
       width: isSel ? 21 : 13,
       opacity: isSel ? 1 : day <= today ? 0.95 : 0.28,
-      name: phaseFor(day, len).name,
+      name: phaseFor(day, len, menLen).name,
     }
   })
 
   const markAngle = (selectedDay - 0.5) * STEP
   const [mx, my] = pt(markAngle, R + 28)
-  const selPhase = phaseFor(selectedDay, len)
+  const selPhase = phaseFor(selectedDay, len, menLen)
 
   const pointToDay = useCallback(
     (clientX: number, clientY: number) => {

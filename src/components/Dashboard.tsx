@@ -150,6 +150,7 @@ export function Dashboard() {
         <section className="hero">
           <CycleRing
             len={current.len}
+            menLen={current.menLen}
             selectedDay={day}
             today={current.day}
             onDaySelect={(d) => {
