@@ -9,6 +9,7 @@ import { CycleRing } from './CycleRing'
 import { PhaseContent } from './PhaseContent'
 import { CalendarGrid } from './CalendarGrid'
 import { DayTrackingModal } from './DayTrackingModal'
+import { NotesLog } from './NotesLog'
 
 const isoOf = (d: Date) => {
   const p = (n: number) => String(n).padStart(2, '0')
@@ -260,6 +261,8 @@ export function Dashboard() {
             </div>
           )
         })()}
+
+        <NotesLog starts={starts} ends={ends} now={now} />
 
         <CalendarGrid
           starts={starts}
