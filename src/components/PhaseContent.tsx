@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Pair } from '../utils/cycle'
 import type { PhaseActivities } from '../data/phaseRecommendations'
+import { getNotesForCycleDay } from '../utils/noteAnalysis'
 
 interface PhaseContentProps {
   eyebrow: string
@@ -13,6 +14,9 @@ interface PhaseContentProps {
   animate?: boolean
   phaseKey?: string
   recommendations?: PhaseActivities
+  cycleDay?: number
+  allNotes?: Array<{ date: Date; content: string }>
+  starts?: Date[]
 }
 
 export function PhaseContent({
@@ -23,6 +27,9 @@ export function PhaseContent({
   fadeKey,
   animate = true,
   recommendations,
+  cycleDay,
+  allNotes = [],
+  starts = [],
 }: PhaseContentProps) {
   const [out, setOut] = useState(false)
   const [tab, setTab] = useState<'feelings' | 'activities'>('feelings')
@@ -39,11 +46,14 @@ export function PhaseContent({
     return () => clearTimeout(t)
   }, [fadeKey, animate])
 
+  const noteInsight = cycleDay && allNotes.length > 0 ? getNotesForCycleDay(new Date(), cycleDay, starts, allNotes) : null
+  const ledeWithInsight = noteInsight ? `${lede} V minulosti si v tyto dny poznamenala, že "${noteInsight}". 🙂` : lede
+
   return (
     <div className={`fade${out ? ' out' : ''}`}>
       <p className="eyebrow">{eyebrow}</p>
       <h2>{title}</h2>
-      <p className="lede">{lede}</p>
+      <p className="lede">{ledeWithInsight}</p>
 
       {/* Tab navigation */}
       {recommendations && (

@@ -26,17 +26,24 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [now] = useState(() => new Date())
   const [trackingDate, setTrackingDate] = useState<Date | null>(null)
+  const [allNotes, setAllNotes] = useState<Array<{ date: Date; content: string }>>([])
+
 
   useEffect(() => {
     const load = async () => {
       if (!user) return
-      const [startsRes, profileRes] = await Promise.all([
+      const [startsRes, profileRes, notesRes] = await Promise.all([
         supabase
           .from('period_starts')
           .select('start_date, end_date')
           .eq('user_id', user.id)
           .order('start_date', { ascending: false }),
         supabase.from('profiles').select('partner_name').eq('id', user.id).maybeSingle(),
+        supabase
+          .from('cycle_notes')
+          .select('note_date, content')
+          .eq('user_id', user.id)
+          .order('note_date', { ascending: true }),
       ])
 
       if (startsRes.data?.length) {
@@ -48,6 +55,14 @@ export function Dashboard() {
 
       if (!profileRes.error && profileRes.data?.partner_name) {
         setPartnerName(profileRes.data.partner_name)
+      }
+
+      if (notesRes.data) {
+        const notes = notesRes.data.map((n) => ({
+          date: new Date(n.note_date + 'T00:00:00'),
+          content: n.content,
+        }))
+        setAllNotes(notes)
       }
 
       setLoading(false)
@@ -164,6 +179,9 @@ export function Dashboard() {
                 animate={!dragging}
                 phaseKey={content.key}
                 recommendations={phaseRecommendations[content.key]}
+                cycleDay={day}
+                allNotes={allNotes}
+                starts={starts}
               />
             </div>
           </div>
