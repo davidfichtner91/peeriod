@@ -4,33 +4,45 @@ export function UpdatePrompt() {
   const [showUpdate, setShowUpdate] = useState(false)
 
   useEffect(() => {
-    // PWA je jen v produkci
-    if (import.meta.env.DEV) return
-
-    // Načti service worker z Vite PWA pluginu
     const checkForUpdates = async () => {
-      if (!navigator.serviceWorker) return
+      if (!navigator.serviceWorker) {
+        console.log('Service Worker not supported')
+        return
+      }
 
-      const registration = await navigator.serviceWorker.getRegistration()
-      if (!registration) return
-
-      // Poslouchej na waiting service worker (nová verze je ready)
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing
-        if (!newWorker) return
-
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // Nová verze je ready a máme starou verzi
-            setShowUpdate(true)
-          }
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
         })
-      })
+        console.log('Service Worker registered:', registration)
 
-      // Zkontroluj každých 60 sekund
-      setInterval(() => {
+        // Poslouchej na waiting service worker (nová verze je ready)
+        registration.addEventListener('updatefound', () => {
+          console.log('Update found!')
+          const newWorker = registration.installing
+          if (!newWorker) return
+
+          newWorker.addEventListener('statechange', () => {
+            console.log('Service Worker state changed:', newWorker.state)
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Nová verze je ready a máme starou verzi
+              console.log('New version available, showing update prompt')
+              setShowUpdate(true)
+            }
+          })
+        })
+
+        // Zkontroluj hned a pak každých 30 sekund
         registration.update()
-      }, 60000)
+        const interval = setInterval(() => {
+          console.log('Checking for updates...')
+          registration.update()
+        }, 30000)
+
+        return () => clearInterval(interval)
+      } catch (error) {
+        console.error('Service Worker registration failed:', error)
+      }
     }
 
     checkForUpdates()
