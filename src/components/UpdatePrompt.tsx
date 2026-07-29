@@ -42,45 +42,66 @@ export function UpdatePrompt() {
     <div
       style={{
         position: 'fixed',
-        bottom: 20,
-        left: 20,
-        right: 20,
-        maxWidth: 400,
-        background: 'var(--card)',
-        border: '1px solid var(--line)',
-        borderRadius: 'var(--r)',
-        padding: '16px 20px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        top: 16,
+        right: 16,
+        background: 'linear-gradient(135deg, var(--accent), #a855f7)',
+        borderRadius: '12px',
+        padding: '14px 18px',
+        boxShadow: '0 8px 24px rgba(124, 58, 237, 0.25)',
         zIndex: 999,
         display: 'flex',
         alignItems: 'center',
         gap: 12,
         justifyContent: 'space-between',
+        maxWidth: 380,
+        animation: 'slideIn 0.3s ease-out',
       }}
     >
+      <style>{`
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>
-          Nová verze je dostupná
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 2 }}>
+          ✨ Aktualizace dostupná
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
-          Reload pro instalaci aktualizace
+        <div style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.85)' }}>
+          Klikni na tlačítko pro instalaci
         </div>
       </div>
       <button
         onClick={() => window.location.reload()}
         style={{
-          padding: '8px 16px',
-          background: 'var(--accent)',
+          padding: '6px 14px',
+          background: 'rgba(255, 255, 255, 0.25)',
           color: '#fff',
-          border: 'none',
-          borderRadius: 8,
-          fontSize: 13,
+          border: '1px solid rgba(255, 255, 255, 0.4)',
+          borderRadius: 6,
+          fontSize: 12,
           fontWeight: 600,
           cursor: 'pointer',
           whiteSpace: 'nowrap',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.35)'
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.6)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)'
         }}
       >
-        Reload
+        Aktualizovat
       </button>
     </div>
   )
