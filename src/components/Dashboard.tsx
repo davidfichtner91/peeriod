@@ -98,6 +98,7 @@ export function Dashboard() {
         const newEnds = [...ends]
         newEnds[idx] = new Date(endStr + 'T00:00:00')
         setEnds(newEnds)
+        setSelectedDay(null)
       }
     }
   }

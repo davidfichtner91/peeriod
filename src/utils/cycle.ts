@@ -106,7 +106,7 @@ export function avgPeriodLen(starts: Date[], ends?: (Date | null | undefined)[])
     .map((start, i) => {
       const end = ends?.[i]
       if (!end) return null
-      return Math.round((mid(end) - mid(start)) / DAY)
+      return Math.round((mid(end) - mid(start)) / DAY) + 1
     })
     .filter((len): len is number => len !== null && len > 0 && len <= 10)
     .slice(-6)
@@ -140,7 +140,7 @@ export function cycleAt(
       if (next !== null && t < next) {
         // Aktuální cyklus: použijeme skutečnou délku menstruace, když ji máme
         const endDate = sorted[i].end
-        const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) : avgMenLen
+        const menLen = endDate ? Math.round((mid(endDate) - st) / DAY) + 1 : avgMenLen
         return {
           day: Math.floor((t - st) / DAY) + 1,
           len: Math.round((next - st) / DAY),

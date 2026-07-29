@@ -159,6 +159,12 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
     return (!end && (!acc || s.getTime() > acc.getTime())) ? s : acc
   }, null as Date | null)
 
+  // Find if this day is part of any cycle period
+  const cycleContainingDate = starts.findIndex((s, i) => {
+    const end = ends[i]
+    return iso(s) <= iso(date) && (!end || iso(date) <= iso(end))
+  })
+
   const handleRecordStart = async () => {
     if (!onPeriodStart) return
     setRecordingPeriod(true)
@@ -172,10 +178,12 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
   }
 
   const handleRecordEnd = async () => {
-    if (!onPeriodEnd || !lastUnclosed) return
+    if (!onPeriodEnd) return
+    const startToRecord = cycleContainingDate !== -1 ? starts[cycleContainingDate] : lastUnclosed
+    if (!startToRecord) return
     setRecordingPeriod(true)
     try {
-      onPeriodEnd(lastUnclosed, date)
+      onPeriodEnd(startToRecord, date)
       onSave?.()
       onClose()
     } finally {
@@ -202,10 +210,10 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
             <button
               className="btn ghost"
               onClick={handleRecordEnd}
-              disabled={recordingPeriod || !lastUnclosed}
-              title={!lastUnclosed ? 'Není otevřený záznam' : ''}
+              disabled={recordingPeriod || (cycleContainingDate === -1 && !lastUnclosed)}
+              title={cycleContainingDate === -1 && !lastUnclosed ? 'Není záznam menstruace' : ''}
             >
-              Zaznamenat konec
+              {cycleContainingDate !== -1 && ends[cycleContainingDate] ? 'Změnit konec' : 'Zaznamenat konec'}
             </button>
           </div>
         </div>
