@@ -159,11 +159,26 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
     return (!end && (!acc || s.getTime() > acc.getTime())) ? s : acc
   }, null as Date | null)
 
-  // Find if this day is part of any cycle period
+  // Find if this day is part of any cycle period, or if it's after the last one
   const cycleContainingDate = starts.findIndex((s, i) => {
     const end = ends[i]
     return iso(s) <= iso(date) && (!end || iso(date) <= iso(end))
   })
+
+  // Find last closed period that could be extended to this date
+  const extendableEnd = (() => {
+    if (cycleContainingDate !== -1) return cycleContainingDate
+    // If not in any period, find the latest one with an end_date that's before this date
+    let lastClosed = -1
+    for (let i = 0; i < starts.length; i++) {
+      if (ends[i] && iso(ends[i]!) < iso(date)) {
+        if (lastClosed === -1 || starts[i].getTime() > starts[lastClosed].getTime()) {
+          lastClosed = i
+        }
+      }
+    }
+    return lastClosed
+  })()
 
   const handleRecordStart = async () => {
     if (!onPeriodStart) return
@@ -179,7 +194,7 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
 
   const handleRecordEnd = async () => {
     if (!onPeriodEnd) return
-    const startToRecord = cycleContainingDate !== -1 ? starts[cycleContainingDate] : lastUnclosed
+    const startToRecord = cycleContainingDate !== -1 ? starts[cycleContainingDate] : (extendableEnd !== -1 ? starts[extendableEnd] : lastUnclosed)
     if (!startToRecord) return
     setRecordingPeriod(true)
     try {
@@ -210,10 +225,10 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
             <button
               className="btn ghost"
               onClick={handleRecordEnd}
-              disabled={recordingPeriod || (cycleContainingDate === -1 && !lastUnclosed)}
-              title={cycleContainingDate === -1 && !lastUnclosed ? 'Není záznam menstruace' : ''}
+              disabled={recordingPeriod || (cycleContainingDate === -1 && extendableEnd === -1 && !lastUnclosed)}
+              title={(cycleContainingDate === -1 && extendableEnd === -1 && !lastUnclosed) ? 'Není záznam menstruace' : ''}
             >
-              {cycleContainingDate !== -1 && ends[cycleContainingDate] ? 'Změnit konec' : 'Zaznamenat konec'}
+              {cycleContainingDate !== -1 && ends[cycleContainingDate] ? 'Změnit konec' : (extendableEnd !== -1 && ends[extendableEnd] ? 'Posunout konec' : 'Zaznamenat konec')}
             </button>
           </div>
         </div>
