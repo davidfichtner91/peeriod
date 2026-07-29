@@ -48,6 +48,39 @@ export function UpdatePrompt() {
     checkForUpdates()
   }, [])
 
+  const handleForceRefresh = async () => {
+    try {
+      // Unregister all service workers
+      if (navigator.serviceWorker) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        for (const registration of registrations) {
+          await registration.unregister()
+          console.log('Service Worker unregistered')
+        }
+      }
+
+      // Clear all caches
+      if (caches) {
+        const cacheNames = await caches.keys()
+        for (const cacheName of cacheNames) {
+          await caches.delete(cacheName)
+          console.log('Cache deleted:', cacheName)
+        }
+      }
+
+      // Clear localStorage
+      localStorage.clear()
+      sessionStorage.clear()
+      console.log('Storage cleared')
+
+      // Hard refresh
+      window.location.href = window.location.href
+    } catch (error) {
+      console.error('Force refresh failed:', error)
+      window.location.reload()
+    }
+  }
+
   if (!showUpdate) return null
 
   return (
@@ -90,7 +123,7 @@ export function UpdatePrompt() {
         </div>
       </div>
       <button
-        onClick={() => window.location.reload()}
+        onClick={handleForceRefresh}
         style={{
           padding: '6px 14px',
           background: 'rgba(255, 255, 255, 0.25)',
