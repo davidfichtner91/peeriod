@@ -88,6 +88,7 @@ export function UpdatePrompt() {
       style={{
         position: 'fixed',
         top: 16,
+        left: 16,
         right: 16,
         background: 'linear-gradient(135deg, var(--accent), #a855f7)',
         borderRadius: '12px',
@@ -98,7 +99,7 @@ export function UpdatePrompt() {
         alignItems: 'center',
         gap: 12,
         justifyContent: 'space-between',
-        maxWidth: 380,
+        maxWidth: 'calc(100% - 32px)',
         animation: 'slideIn 0.3s ease-out',
       }}
     >

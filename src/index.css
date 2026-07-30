@@ -468,14 +468,14 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
   background: rgba(0, 0, 0, 0.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 999; padding: 20px;
-  overflow-y: auto;
+  overflow-y: auto; overflow-x: hidden;
 }
 
 .modal {
   background: var(--card); border: 1px solid var(--line);
   border-radius: var(--r); padding: 28px; width: 100%; max-width: 500px;
   max-height: 90vh; overflow-y: auto; animation: modal-in .2s ease;
-  margin: auto;
+  margin: auto; box-sizing: border-box;
 }
 
 @keyframes modal-in {
@@ -507,7 +507,7 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
 
 .dp {
   position: absolute; z-index: 40; top: calc(100% + 8px); left: 0;
-  min-width: 268px; background: var(--card);
+  min-width: 268px; max-width: calc(100vw - 32px); background: var(--card);
   border: 1px solid var(--line-2); border-radius: 14px; padding: 14px;
   box-shadow: 0 18px 40px -22px rgba(0, 0, 0, .55);
 }
