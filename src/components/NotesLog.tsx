@@ -9,6 +9,11 @@ interface Note {
   phase: string
 }
 
+const iso = (d: Date) => {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 interface NotesLogProps {
   starts: Date[]
   ends?: (Date | null)[]
@@ -86,7 +91,7 @@ export function NotesLog({ starts, ends = [], now }: NotesLogProps) {
         >
           {notes.map((note, i) => (
             <li
-              key={`${note.date.toISOString()}-${i}`}
+              key={`${iso(note.date)}-${i}`}
               style={{
                 paddingBottom: 12,
                 marginBottom: 12,
@@ -95,7 +100,7 @@ export function NotesLog({ starts, ends = [], now }: NotesLogProps) {
             >
               <div style={{ display: 'flex', gap: 12, marginBottom: 6, alignItems: 'baseline' }}>
                 <time
-                  dateTime={note.date.toISOString().split('T')[0]}
+                  dateTime={iso(note.date)}
                   style={{ fontVariantNumeric: 'tabular-nums', minWidth: 100, color: 'var(--ink-3)' }}
                 >
                   {fmt(note.date)}

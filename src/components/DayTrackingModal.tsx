@@ -15,6 +15,13 @@ const SYMPTOMS = [
   'Podrážděnost',
 ]
 
+// Lokální datum → YYYY-MM-DD. Ne toISOString() — ta převádí do UTC a v našem
+// pásmu posune lokální půlnoc na předchozí den.
+const iso = (d: Date) => {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 interface DayTrackingModalProps {
   date: Date
   onClose: () => void
@@ -33,7 +40,7 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
   const [saving, setSaving] = useState(false)
   const [recordingPeriod, setRecordingPeriod] = useState(false)
 
-  const dateStr = date.toISOString().split('T')[0]
+  const dateStr = iso(date)
 
   useEffect(() => {
     const load = async () => {
@@ -146,11 +153,6 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
       day: 'numeric',
     }
     return d.toLocaleDateString('cs-CZ', opts)
-  }
-
-  const iso = (d: Date) => {
-    const p = (n: number) => String(n).padStart(2, '0')
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
   }
 
   const hasStartToday = starts.some((s) => iso(s) === iso(date))
