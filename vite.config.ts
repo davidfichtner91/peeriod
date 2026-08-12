@@ -7,26 +7,35 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      manifestFilename: 'manifest.webmanifest',
+      includeAssets: ['app-icon.svg', 'app-icon-maskable.svg'],
       manifest: {
         name: 'Peeriod',
         short_name: 'Peeriod',
         description: 'Menstruační cyklus tracker pro muže',
-        theme_color: '#FBFAF8',
-        background_color: '#FBFAF8',
+        theme_color: '#a855f7',
+        background_color: '#ffffff',
         display: 'standalone',
         scope: '/',
         start_url: '/',
+        orientation: 'portrait-primary',
         icons: [
           {
-            src: 'favicon.ico',
-            sizes: '32x32',
-            type: 'image/x-icon',
+            src: '/app-icon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any',
+          },
+          {
+            src: '/app-icon-maskable.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'maskable',
           },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,svg}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
