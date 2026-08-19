@@ -248,6 +248,41 @@ svg.ring:active {
   min-height: calc(3 * 1.6em);
 }
 
+/* ---------- co appka ví z tvých vlastních záznamů ---------- */
+.recall {
+  border-left: 2px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 14px 16px;
+  margin: 0 0 22px;
+  max-width: 52ch;
+  display: grid;
+  gap: 14px;
+}
+.recall .eyebrow { margin-bottom: 6px; }
+
+.recall blockquote {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-style: italic;
+}
+.recall blockquote::before { content: '„'; }
+.recall blockquote::after { content: '“'; }
+
+.recall-symptoms ul { list-style: none; margin: 0; padding: 0; }
+.recall-symptoms li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  padding: 3px 0;
+}
+.recall-symptoms b { color: var(--ink); font-weight: 600; white-space: nowrap; }
+
 /* Výška je rezervovaná na nejdelší variantu (4 tipy), aby se stránka
    při přepnutí dne nehýbala. Na mobilu se rezervace ruší. */
 .tips {

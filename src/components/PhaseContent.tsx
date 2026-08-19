@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Pair } from '../utils/cycle'
+import type { Pair, PhaseKey } from '../utils/cycle'
 import type { PhaseActivities } from '../data/phaseRecommendations'
-import { getNotesForCycleDay } from '../utils/noteAnalysis'
+import { getNotesForCycleDay, getSymptomPatterns } from '../utils/noteAnalysis'
+
+/** „Minulý cyklus sis…" zní líp než „Před 1 cyklem sis…" */
+function agoLabel(cyclesAgo: number): string {
+  if (cyclesAgo === 1) return 'Minulý cyklus sis v tenhle den poznamenal'
+  if (cyclesAgo === 2) return 'Předminulý cyklus sis v tenhle den poznamenal'
+  return `Před ${cyclesAgo} cykly sis v tenhle den poznamenal`
+}
 
 interface PhaseContentProps {
   eyebrow: string
@@ -12,11 +19,13 @@ interface PhaseContentProps {
   fadeKey: number | string
   /** během tažení po kruhu fade vypnout, jinak to bliká */
   animate?: boolean
-  phaseKey?: string
+  phaseKey?: PhaseKey
   recommendations?: PhaseActivities
   cycleDay?: number
   allNotes?: Array<{ date: Date; content: string }>
+  allSymptoms?: Array<{ date: Date; symptom: string }>
   starts?: Date[]
+  ends?: (Date | null)[]
 }
 
 export function PhaseContent({
@@ -26,10 +35,13 @@ export function PhaseContent({
   tips,
   fadeKey,
   animate = true,
+  phaseKey,
   recommendations,
   cycleDay,
   allNotes = [],
+  allSymptoms = [],
   starts = [],
+  ends,
 }: PhaseContentProps) {
   const [out, setOut] = useState(false)
   const [tab, setTab] = useState<'feelings' | 'activities'>('feelings')
@@ -46,14 +58,41 @@ export function PhaseContent({
     return () => clearTimeout(t)
   }, [fadeKey, animate])
 
-  const noteInsight = cycleDay && allNotes.length > 0 ? getNotesForCycleDay(new Date(), cycleDay, starts, allNotes) : null
-  const ledeWithInsight = noteInsight ? `${lede} V tyto dny sis poznamenal, že partnerka prohlásila: "přijde si ${noteInsight}". 🙂` : lede
+  const noteInsight = cycleDay ? getNotesForCycleDay(cycleDay, starts, allNotes, ends) : null
+  const patterns = phaseKey ? getSymptomPatterns(phaseKey, starts, allSymptoms, ends) : []
 
   return (
     <div className={`fade${out ? ' out' : ''}`}>
       <p className="eyebrow">{eyebrow}</p>
       <h2>{title}</h2>
-      <p className="lede">{ledeWithInsight}</p>
+      <p className="lede">{lede}</p>
+
+      {(noteInsight || patterns.length > 0) && (
+        <div className="recall">
+          {noteInsight && (
+            <div className="recall-note">
+              <p className="eyebrow">{agoLabel(noteInsight.cyclesAgo)}</p>
+              <blockquote>{noteInsight.content}</blockquote>
+            </div>
+          )}
+
+          {patterns.length > 0 && (
+            <div className="recall-symptoms">
+              <p className="eyebrow">Co se u ní v téhle fázi opakuje</p>
+              <ul>
+                {patterns.map((p) => (
+                  <li key={p.symptom}>
+                    <span>{p.symptom}</span>
+                    <b className="tnum">
+                      {p.cycles} z {p.tracked} cyklů
+                    </b>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tab navigation */}
       {recommendations && (

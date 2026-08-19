@@ -44,7 +44,8 @@ export type PhaseBounds = Record<PhaseKey, [number, number]>
 
 export const ORDER: PhaseKey[] = ['mens', 'foli', 'ovul', 'lute']
 
-const mid = (d: Date): number =>
+/** Lokální půlnoc daného dne. Srovnávat data jinak než přes tohle se nevyplácí. */
+export const mid = (d: Date): number =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
 /**

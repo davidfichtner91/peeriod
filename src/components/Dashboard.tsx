@@ -27,12 +27,15 @@ export function Dashboard() {
   const now = new Date()
   const [trackingDate, setTrackingDate] = useState<Date | null>(null)
   const [allNotes, setAllNotes] = useState<Array<{ date: Date; content: string }>>([])
+  const [allSymptoms, setAllSymptoms] = useState<Array<{ date: Date; symptom: string }>>([])
+  /** Bump po uložení v modalu, ať se poznámky a příznaky načtou znovu. */
+  const [refreshKey, setRefreshKey] = useState(0)
 
 
   useEffect(() => {
     const load = async () => {
       if (!user) return
-      const [startsRes, profileRes, notesRes] = await Promise.all([
+      const [startsRes, profileRes, notesRes, symptomsRes] = await Promise.all([
         supabase
           .from('period_starts')
           .select('start_date, end_date')
@@ -44,6 +47,11 @@ export function Dashboard() {
           .select('note_date, content')
           .eq('user_id', user.id)
           .order('note_date', { ascending: true }),
+        supabase
+          .from('cycle_symptoms')
+          .select('symptom_date, symptom')
+          .eq('user_id', user.id)
+          .order('symptom_date', { ascending: true }),
       ])
 
       if (startsRes.data?.length) {
@@ -65,10 +73,19 @@ export function Dashboard() {
         setAllNotes(notes)
       }
 
+      if (symptomsRes.data) {
+        setAllSymptoms(
+          symptomsRes.data.map((s) => ({
+            date: new Date(s.symptom_date + 'T00:00:00'),
+            symptom: s.symptom,
+          }))
+        )
+      }
+
       setLoading(false)
     }
     load()
-  }, [user])
+  }, [user, refreshKey])
 
   const addStart = async (date: Date) => {
     if (!user) return
@@ -183,7 +200,9 @@ export function Dashboard() {
                 recommendations={phaseRecommendations[content.key]}
                 cycleDay={day}
                 allNotes={allNotes}
+                allSymptoms={allSymptoms}
                 starts={starts}
+                ends={ends}
               />
             </div>
           </div>
@@ -310,7 +329,10 @@ export function Dashboard() {
         <DayTrackingModal
           date={trackingDate}
           onClose={() => setTrackingDate(null)}
-          onSave={() => setTrackingDate(null)}
+          onSave={() => {
+            setTrackingDate(null)
+            setRefreshKey((k) => k + 1)
+          }}
           starts={starts}
           ends={ends}
           onPeriodStart={addStart}

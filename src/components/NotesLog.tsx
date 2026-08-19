@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { cycleAt } from '../utils/cycle'
+import { cycleAt, mid } from '../utils/cycle'
 
 interface Note {
   date: Date
@@ -60,7 +60,10 @@ export function NotesLog({ starts, ends = [], now }: NotesLogProps) {
     }
 
     loadNotes()
-  }, [user, starts, ends, now])
+    // `now` je nový Date při každém renderu rodiče — porovnáváme proto jen den,
+    // jinak by se poznámky tahaly ze serveru při každém překreslení.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, starts, ends, mid(now)])
 
   if (loading || notes.length === 0) return null
 
