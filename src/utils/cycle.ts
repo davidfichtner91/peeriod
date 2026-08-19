@@ -29,6 +29,8 @@ export interface CycleInfo {
   len: number
   menLen: number
   predicted: boolean
+  /** O kolik dní cyklus přetáhl očekávanou délku. 0 = běží podle plánu. */
+  overdue: number
 }
 
 export interface ContentInfo {
@@ -124,7 +126,7 @@ export function cycleAt(
 ): CycleInfo {
   const L = avgLen(starts)
   const avgMenLen = avgPeriodLen(starts, ends)
-  if (!starts.length) return { day: 1, len: L, menLen: avgMenLen, predicted: true }
+  if (!starts.length) return { day: 1, len: L, menLen: avgMenLen, predicted: true, overdue: 0 }
 
   // Seřaď starts a ends pohromadě (aby indexy seděly)
   const paired = starts.map((s, i) => ({ start: s, end: ends?.[i] || null }))
@@ -147,12 +149,38 @@ export function cycleAt(
           len: Math.round((next - st) / DAY),
           menLen,
           predicted: false,
+          overdue: 0,
         }
       }
       if (next === null) {
         const off = Math.round((t - st) / DAY)
-        // Budoucí cyklus: máme jen průměr
-        return { day: (off % L) + 1, len: L, menLen: avgMenLen, predicted: t > mid(now) }
+        const nowOff = Math.round((mid(now) - st) / DAY)
+        // Dokud nezaznamenáš další začátek, cyklus se nepřetáčí — jen běží dál.
+        // Přetočit se na den 1 by tvrdilo, že menstruace začala, což nevíme.
+        const overdue = Math.max(0, nowOff - L + 1)
+
+        if (off <= nowOff) {
+          return {
+            day: off + 1,
+            len: L,
+            menLen: avgMenLen,
+            // Za očekávanou délkou už nejde o počítání, ale o odhad.
+            predicted: off >= L,
+            overdue,
+          }
+        }
+
+        // Budoucnost. Jsme-li po termínu, nejbližší možný začátek je zítra
+        // a další cykly se počítají od něj.
+        const anchor = Math.max(L, nowOff + 1)
+        const rel = off - anchor
+        return {
+          day: rel < 0 ? off + 1 : (rel % L) + 1,
+          len: L,
+          menLen: avgMenLen,
+          predicted: true,
+          overdue,
+        }
       }
     }
   }
@@ -160,7 +188,7 @@ export function cycleAt(
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
   const st = mid(sorted[0].start)
   const off = Math.round((t - st) / DAY)
-  return { day: (((off % L) + L) % L) + 1, len: L, menLen: avgMenLen, predicted: true }
+  return { day: (((off % L) + L) % L) + 1, len: L, menLen: avgMenLen, predicted: true, overdue: 0 }
 }
 
 export function isStart(date: Date, starts: Date[]): boolean {

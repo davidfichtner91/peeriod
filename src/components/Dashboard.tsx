@@ -11,6 +11,9 @@ import { CalendarGrid } from './CalendarGrid'
 import { DayTrackingModal } from './DayTrackingModal'
 import { NotesLog } from './NotesLog'
 
+/** 1 den, 2–4 dny, 5+ dní */
+const dayWord = (n: number) => (n === 1 ? 'den' : n < 5 ? 'dny' : 'dní')
+
 const isoOf = (d: Date) => {
   const p = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
@@ -171,6 +174,7 @@ export function Dashboard() {
             menLen={current.menLen}
             selectedDay={day}
             today={current.day}
+            overdue={current.overdue}
             onDaySelect={(d) => {
               setDragging(true)
               setSelectedDay(d === current.day ? null : d)
@@ -185,11 +189,25 @@ export function Dashboard() {
               </button>
             )}
             <div style={{ overflowY: 'auto', flex: 1, paddingRight: 8 }}>
+              {current.overdue > 0 && isToday && (
+                <div className="overdue">
+                  <p>
+                    Cyklus běží <b>{current.overdue} {dayWord(current.overdue)}</b> po
+                    očekávaném termínu. Menstruace zatím nezaznamenaná — dokud ji nezadáš,
+                    počítá se pořád tenhle cyklus.
+                  </p>
+                  <button className="btn" onClick={() => setTrackingDate(now)}>
+                    Začala dnes
+                  </button>
+                </div>
+              )}
               <PhaseContent
                 eyebrow={
                   isToday
                     ? `Dnes · ${content.phase.name}`
-                    : `Den ${day} · ${content.phase.name} (${content.from}.–${content.to}. den)`
+                    : day > current.len
+                      ? `Den ${day} · ${day - current.len} ${dayWord(day - current.len)} po termínu`
+                      : `Den ${day} · ${content.phase.name} (${content.from}.–${content.to}. den)`
                 }
                 title={content.stage.title}
                 lede={content.stage.lede}

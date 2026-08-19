@@ -3,10 +3,13 @@ import { colorOf, phaseFor } from '../utils/cycle'
 import { Glyph } from './Glyph'
 
 interface CycleRingProps {
+  /** Očekávaná délka cyklu. Určuje barvy a hranice fází — nesmí růst se zpožděním. */
   len: number
   menLen: number
   selectedDay: number
   today: number
+  /** Kolik dní cyklus přetáhl. O tolik segmentů kruh povyroste. */
+  overdue?: number
   onDaySelect: (day: number) => void
 }
 
@@ -14,36 +17,49 @@ const R = 120
 const CX = 160
 const CY = 160
 const GAP = 2.6
+/** Přes tolik dní po termínu už kruh neroste, jinak by se rozdrobil na vlásky. */
+const MAX_OVERDUE_SEGMENTS = 14
 
 const pt = (a: number, r: number): [number, number] => [
   CX + r * Math.cos(((a - 90) * Math.PI) / 180),
   CY + r * Math.sin(((a - 90) * Math.PI) / 180),
 ]
 
-export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: CycleRingProps) {
+export function CycleRing({ len, menLen, selectedDay, today, overdue = 0, onDaySelect }: CycleRingProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
-  const STEP = 360 / len
+  /* Kruh se o dny po termínu roztáhne, ale fáze se pořád počítají z `len` —
+     `bounds()` kotví ovulaci od konce cyklu, takže delší `len` by ho přebarvil. */
+  const total = len + Math.min(overdue, MAX_OVERDUE_SEGMENTS)
+  const STEP = 360 / total
+  // Při extrémním zpoždění může den přerůst kruh — značka pak zaparkuje na konci.
+  const markDay = Math.min(selectedDay, total)
 
   /* Segmenty se vykreslují deklarativně a React je jen přepočítává.
      Nikdy se nepřemontují, takže se nespouští vstupní animace znovu. */
-  const segments = Array.from({ length: len }, (_, i) => {
+  const segments = Array.from({ length: total }, (_, i) => {
     const day = i + 1
     const [x0, y0] = pt(i * STEP + GAP / 2, R)
     const [x1, y1] = pt((i + 1) * STEP - GAP / 2, R)
     const d = `M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1}`
-    const isSel = day === selectedDay
+    const isSel = day === markDay
+    const isOverdue = day > len
     return {
       day,
       d,
       color: colorOf(day, len, menLen),
-      width: isSel ? 21 : 13,
-      opacity: isSel ? 1 : day <= today ? 0.95 : 0.28,
-      name: phaseFor(day, len, menLen).name,
+      // Dny po termínu tenčí a bledší — nestojí na žádném záznamu.
+      // (Čárkovat nejde: kulaté zakončení tahu udělá z čárky kolečko
+      // o průměru celé tloušťky a mezery se slijí.)
+      width: isSel ? 21 : isOverdue ? 7 : 13,
+      opacity: isSel ? 1 : isOverdue ? 0.55 : day <= today ? 0.95 : 0.28,
+      name: isOverdue
+        ? `Den ${day} — po očekávaném termínu`
+        : `Den ${day} — ${phaseFor(day, len, menLen).name}`,
     }
   })
 
-  const markAngle = (selectedDay - 0.5) * STEP
+  const markAngle = (markDay - 0.5) * STEP
   const [mx, my] = pt(markAngle, R + 28)
   const selPhase = phaseFor(selectedDay, len, menLen)
 
@@ -57,9 +73,9 @@ export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: Cycl
       const y = (clientY - rect.top) * scale - CY
       const dist = Math.hypot(x, y)
       const ang = ((Math.atan2(y, x) * 180) / Math.PI + 90 + 360) % 360
-      return { day: Math.min(len, Math.floor(ang / STEP) + 1), dist }
+      return { day: Math.min(total, Math.floor(ang / STEP) + 1), dist }
     },
-    [len, STEP, selectedDay]
+    [total, STEP, selectedDay]
   )
 
   const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -93,10 +109,10 @@ export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: Cycl
   const handleKeyDown = (e: React.KeyboardEvent<SVGSVGElement>) => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
       e.preventDefault()
-      onDaySelect(((selectedDay - 2 + len) % len) + 1)
+      onDaySelect(((selectedDay - 2 + total) % total) + 1)
     } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
       e.preventDefault()
-      onDaySelect((selectedDay % len) + 1)
+      onDaySelect((selectedDay % total) + 1)
     } else if (e.key === 'Home') {
       e.preventDefault()
       onDaySelect(today)
@@ -114,9 +130,13 @@ export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: Cycl
           role="slider"
           aria-label="Den cyklu"
           aria-valuemin={1}
-          aria-valuemax={len}
+          aria-valuemax={total}
           aria-valuenow={selectedDay}
-          aria-valuetext={`Den ${selectedDay} z ${len} — ${selPhase.name}`}
+          aria-valuetext={
+            selectedDay > len
+              ? `Den ${selectedDay} — ${selectedDay - len} po očekávaném termínu`
+              : `Den ${selectedDay} z ${len} — ${selPhase.name}`
+          }
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={endDrag}
@@ -126,7 +146,7 @@ export function CycleRing({ len, menLen, selectedDay, today, onDaySelect }: Cycl
           {segments.map((s) => (
             <g key={s.day}>
               <path className="hit" d={s.d}>
-                <title>{`Den ${s.day} — ${s.name}`}</title>
+                <title>{s.name}</title>
               </path>
               <path
                 className="seg"

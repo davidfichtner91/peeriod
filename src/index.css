@@ -248,6 +248,29 @@ svg.ring:active {
   min-height: calc(3 * 1.6em);
 }
 
+/* ---------- cyklus přetáhl očekávanou délku ---------- */
+.overdue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  max-width: 52ch;
+}
+.overdue p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  flex: 1 1 16ch;
+}
+.overdue b { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.overdue .btn { flex: 0 0 auto; }
+
 /* ---------- co appka ví z tvých vlastních záznamů ---------- */
 .recall {
   border-left: 2px solid var(--accent);
