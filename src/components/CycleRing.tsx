@@ -11,6 +11,8 @@ interface CycleRingProps {
   /** Kolik dní cyklus přetáhl. O tolik segmentů kruh povyroste. */
   overdue?: number
   onDaySelect: (day: number) => void
+  /** Klepnutí do středu — otevře zápis příznaků a poznámky k vybranému dni. */
+  onOpenDay?: () => void
 }
 
 const R = 120
@@ -25,7 +27,7 @@ const pt = (a: number, r: number): [number, number] => [
   CY + r * Math.sin(((a - 90) * Math.PI) / 180),
 ]
 
-export function CycleRing({ len, menLen, selectedDay, today, overdue = 0, onDaySelect }: CycleRingProps) {
+export function CycleRing({ len, menLen, selectedDay, today, overdue = 0, onDaySelect, onOpenDay }: CycleRingProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const dragging = useRef(false)
   /* Kruh se o dny po termínu roztáhne, ale fáze se pořád počítají z `len` —
@@ -195,16 +197,26 @@ export function CycleRing({ len, menLen, selectedDay, today, overdue = 0, onDayS
           </g>
         </svg>
 
+        {/* Klikací je jen vnitřní kotouč, ne celý .hub — ten překrývá i prstenec
+            a spolkl by klepnutí mířená na segmenty. */}
         <div className="hub">
-          <div className="hub-day tnum">{selectedDay}</div>
-          <div className="hub-label">den cyklu</div>
-          <div className="hub-phase">
-            <Glyph type={selPhase.glyph} color={selPhase.color} />
-            {selPhase.name}
-          </div>
+          <button
+            type="button"
+            className="hub-btn"
+            onClick={onOpenDay}
+            disabled={!onOpenDay}
+            aria-label={`Zapsat příznaky a poznámku k ${selectedDay}. dni cyklu`}
+          >
+            <span className="hub-day tnum">{selectedDay}</span>
+            <span className="hub-label">den cyklu</span>
+            <span className="hub-phase">
+              <Glyph type={selPhase.glyph} color={selPhase.color} />
+              {selPhase.name}
+            </span>
+          </button>
         </div>
       </div>
-      <p className="hint">Táhni po kruhu nebo klepni na den</p>
+      <p className="hint">Táhni po kruhu · klepnutím doprostřed zapíšeš den</p>
     </div>
   )
 }

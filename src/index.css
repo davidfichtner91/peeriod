@@ -216,6 +216,19 @@ svg.ring:active {
   align-items: center; justify-content: center;
   pointer-events: none; text-align: center;
 }
+/* Prstenec reaguje na tažení od 86 do 154 (v souřadnicích viewBoxu 320),
+   takže kotouč o průměru 52 % šířky se pod něj bezpečně vejde a nekrade mu klepnutí. */
+.hub-btn {
+  pointer-events: auto;
+  width: 52%; aspect-ratio: 1; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: inherit; font: inherit; text-align: center;
+  transition: background 0.15s ease;
+}
+.hub-btn:hover:not(:disabled), .hub-btn:focus-visible { background: var(--accent-soft); }
+.hub-btn:disabled { cursor: default; }
+
 .hub-day {
   font-family: var(--font-display); font-size: 44px; font-weight: 700;
   line-height: 1; letter-spacing: -0.04em;

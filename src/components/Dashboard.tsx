@@ -148,6 +148,12 @@ export function Dashboard() {
 
   const current = cycleAt(now, starts, ends, now)
   const day = selectedDay ?? current.day
+
+  /* Den cyklu → datum. Přes konstruktor, ne přičítáním milisekund: součet by
+     na přechodu letního času posunul hodinu a spadl na sousední den. */
+  const latestStart = starts.reduce((a, b) => (b.getTime() > a.getTime() ? b : a))
+  const dateForDay = (d: number) =>
+    new Date(latestStart.getFullYear(), latestStart.getMonth(), latestStart.getDate() + d - 1)
   const content = contentFor(day, current.len, current.menLen)
   const isToday = day === current.day
 
@@ -180,6 +186,7 @@ export function Dashboard() {
               setSelectedDay(d === current.day ? null : d)
               window.setTimeout(() => setDragging(false), 0)
             }}
+            onOpenDay={() => setTrackingDate(dateForDay(day))}
           />
 
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
