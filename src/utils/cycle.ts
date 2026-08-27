@@ -3,6 +3,8 @@ import { PHASES, FEELS } from '../data/phases'
 const DAY = 864e5
 export const MIN_LEN = 21
 export const MAX_LEN = 35
+/** Přes tolik dní už nemá smysl menstruaci protahovat — konec zjevně jen chybí. */
+const MAX_MEN_LEN = 10
 
 export type PhaseKey = 'mens' | 'foli' | 'ovul' | 'lute'
 export type GlyphType = 'disc' | 'ring' | 'diamond' | 'half'
@@ -31,6 +33,8 @@ export interface CycleInfo {
   predicted: boolean
   /** O kolik dní cyklus přetáhl očekávanou délku. 0 = běží podle plánu. */
   overdue: number
+  /** O kolik dní přetéká menstruace bez zaznamenaného konce. 0 = v pořádku. */
+  menOverdue: number
 }
 
 export interface ContentInfo {
@@ -126,7 +130,8 @@ export function cycleAt(
 ): CycleInfo {
   const L = avgLen(starts)
   const avgMenLen = avgPeriodLen(starts, ends)
-  if (!starts.length) return { day: 1, len: L, menLen: avgMenLen, predicted: true, overdue: 0 }
+  if (!starts.length)
+    return { day: 1, len: L, menLen: avgMenLen, predicted: true, overdue: 0, menOverdue: 0 }
 
   // Seřaď starts a ends pohromadě (aby indexy seděly)
   const paired = starts.map((s, i) => ({ start: s, end: ends?.[i] || null }))
@@ -150,6 +155,7 @@ export function cycleAt(
           menLen,
           predicted: false,
           overdue: 0,
+          menOverdue: 0,
         }
       }
       if (next === null) {
@@ -159,14 +165,25 @@ export function cycleAt(
         // Přetočit se na den 1 by tvrdilo, že menstruace začala, což nevíme.
         const overdue = Math.max(0, nowOff - L + 1)
 
+        /* Zaznamenaný konec má přednost před průměrem — jinak by zápis konce
+           s fázemi vůbec nepohnul. Bez něj menstruace přetéká stejně jako
+           cyklus: počítá se dál, místo aby po průměru skočila do folikulární. */
+        const endDate = sorted[i].end
+        const running = Math.min(nowOff + 1, MAX_MEN_LEN)
+        const menLen = endDate
+          ? Math.max(1, Math.round((mid(endDate) - st) / DAY) + 1)
+          : Math.max(avgMenLen, running)
+        const menOverdue = endDate ? 0 : Math.max(0, running - avgMenLen)
+
         if (off <= nowOff) {
           return {
             day: off + 1,
             len: L,
-            menLen: avgMenLen,
+            menLen,
             // Za očekávanou délkou už nejde o počítání, ale o odhad.
             predicted: off >= L,
             overdue,
+            menOverdue,
           }
         }
 
@@ -177,9 +194,10 @@ export function cycleAt(
         return {
           day: rel < 0 ? off + 1 : (rel % L) + 1,
           len: L,
-          menLen: avgMenLen,
+          menLen,
           predicted: true,
           overdue,
+          menOverdue,
         }
       }
     }
@@ -188,7 +206,14 @@ export function cycleAt(
   // datum před prvním záznamem — dopočítáno zpětně, tedy odhad
   const st = mid(sorted[0].start)
   const off = Math.round((t - st) / DAY)
-  return { day: (((off % L) + L) % L) + 1, len: L, menLen: avgMenLen, predicted: true, overdue: 0 }
+  return {
+    day: (((off % L) + L) % L) + 1,
+    len: L,
+    menLen: avgMenLen,
+    predicted: true,
+    overdue: 0,
+    menOverdue: 0,
+  }
 }
 
 export function isStart(date: Date, starts: Date[]): boolean {

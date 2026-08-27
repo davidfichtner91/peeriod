@@ -196,14 +196,28 @@ export function Dashboard() {
               </button>
             )}
             <div style={{ overflowY: 'auto', flex: 1, paddingRight: 8 }}>
-              {current.overdue > 0 && isToday && (
+              {current.menOverdue > 0 && isToday && (
+                <div className="overdue">
+                  <p>
+                    Menstruace běží <b>{day} {dayWord(day)}</b> a nemá zaznamenaný konec.
+                    Dokud ho nezadáš, počítá se dál — fáze se posunou až podle něj.
+                  </p>
+                  <button className="btn" onClick={() => addEnd(latestStart, now)}>
+                    Skončila dnes
+                  </button>
+                </div>
+              )}
+
+              {/* Chybí-li konec menstruace, řeš nejdřív ten — jinak by vedle sebe
+                  stálo „menstruace běží 30 dní" a „menstruace zatím nezaznamenaná". */}
+              {current.overdue > 0 && current.menOverdue === 0 && isToday && (
                 <div className="overdue">
                   <p>
                     Cyklus běží <b>{current.overdue} {dayWord(current.overdue)}</b> po
                     očekávaném termínu. Menstruace zatím nezaznamenaná — dokud ji nezadáš,
                     počítá se pořád tenhle cyklus.
                   </p>
-                  <button className="btn" onClick={() => setTrackingDate(now)}>
+                  <button className="btn" onClick={() => addStart(now)}>
                     Začala dnes
                   </button>
                 </div>
