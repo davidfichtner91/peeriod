@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { useBackCloses } from '../lib/backButton'
 
 const SYMPTOMS = [
   'Bolest',
@@ -39,6 +40,7 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [recordingPeriod, setRecordingPeriod] = useState(false)
+  useBackCloses(onClose)
 
   const dateStr = iso(date)
 

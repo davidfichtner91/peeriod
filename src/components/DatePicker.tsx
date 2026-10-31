@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { BackCloses } from '../lib/backButton'
 
 interface DatePickerProps {
   /** vybrané datum ve tvaru YYYY-MM-DD */
@@ -97,6 +98,7 @@ export function DatePicker({
         </svg>
       </button>
 
+      {open && <BackCloses zavrit={() => setOpen(false)} />}
       {open && (
         <div className="dp" role="dialog" aria-label="Výběr data">
           <div className="dphead">
