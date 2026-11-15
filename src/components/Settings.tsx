@@ -10,6 +10,9 @@ export function Settings() {
   const { user, signOut } = useAuth()
   const [startDate, setStartDate] = useState('')
   const [partnerName, setPartnerName] = useState('')
+  const [greetingName, setGreetingName] = useState('')
+  /** poslední uložený začátek; nový se zapíše, jen když se datum změní */
+  const [savedStart, setSavedStart] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
@@ -27,18 +30,18 @@ export function Settings() {
           .limit(1),
         supabase
           .from('profiles')
-          .select('partner_name')
+          .select('partner_name, greeting_name')
           .eq('id', user.id)
           .maybeSingle(),
       ])
 
       if (startsRes.data?.length) {
         setStartDate(startsRes.data[0].start_date)
+        setSavedStart(startsRes.data[0].start_date)
       }
 
-      if (profileRes.data?.partner_name) {
-        setPartnerName(profileRes.data.partner_name)
-      }
+      setPartnerName(profileRes.data?.partner_name ?? '')
+      setGreetingName(profileRes.data?.greeting_name ?? '')
 
       setLoading(false)
     }
@@ -59,11 +62,17 @@ export function Settings() {
       // upsert, ne update: řádek v profiles nemusí existovat
       const { error: profErr } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, partner_name: partnerName.trim() || null })
+        .upsert({
+          id: user.id,
+          partner_name: partnerName.trim() || null,
+          greeting_name: greetingName.trim() || null,
+        })
       if (profErr) throw profErr
 
       let err1: { code?: string; message?: string } | null = null
-      if (startDate) {
+      // Bez téhle podmínky každé uložení jména zkusilo zapsat stejný začátek
+      // znovu a skončilo hláškou „Tento den je již zaznamenán“.
+      if (startDate && startDate !== savedStart) {
         const { error } = await supabase
           .from('period_starts')
           .insert({ user_id: user.id, start_date: startDate })
@@ -181,6 +190,36 @@ export function Settings() {
                 {message.text}
               </div>
             )}
+
+            <div>
+              <label
+                htmlFor="greeting-name"
+                className="block text-sm font-medium mb-2"
+                style={{ color: 'var(--ink)' }}
+              >
+                Jak tě pozdravit při spuštění? (volitelné)
+              </label>
+              <input
+                id="greeting-name"
+                type="text"
+                value={greetingName}
+                onChange={(e) => setGreetingName(e.target.value)}
+                placeholder="Např. Davide"
+                maxLength={40}
+                autoComplete="off"
+                className="w-full px-4 py-2 font-body text-sm"
+                style={{
+                  border: '1px solid var(--line-2)',
+                  borderRadius: '9px',
+                  backgroundColor: 'var(--card)',
+                  color: 'var(--ink)',
+                }}
+              />
+              <p style={{ fontSize: '12.5px', color: 'var(--ink-2)', marginTop: '6px' }}>
+                Napiš jméno tak, jak ho chceš slyšet: „Ahoj Davide!“. Bez jména appka řekne
+                „Ahoj chlape!“.
+              </p>
+            </div>
 
             <div className="flex gap-4 pt-4">
               <button

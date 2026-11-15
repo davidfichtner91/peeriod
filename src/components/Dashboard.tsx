@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { cycleAt, contentFor, avgLen, intervals, isOutlier } from '../utils/cycle'
@@ -10,6 +10,7 @@ import { PhaseContent } from './PhaseContent'
 import { CalendarGrid } from './CalendarGrid'
 import { DayTrackingModal } from './DayTrackingModal'
 import { NotesLog } from './NotesLog'
+import { StartSplash, shouldShowSplash } from './StartSplash'
 
 /** 1 den, 2–4 dny, 5+ dní */
 const dayWord = (n: number) => (n === 1 ? 'den' : n < 5 ? 'dny' : 'dní')
@@ -24,6 +25,9 @@ export function Dashboard() {
   const [starts, setStarts] = useState<Date[]>([])
   const [ends, setEnds] = useState<(Date | null)[]>([])
   const [partnerName, setPartnerName] = useState<string>()
+  const [greetingName, setGreetingName] = useState<string>()
+  const [splash, setSplash] = useState(shouldShowSplash)
+  const hideSplash = useCallback(() => setSplash(false), [])
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -44,7 +48,7 @@ export function Dashboard() {
           .select('start_date, end_date')
           .eq('user_id', user.id)
           .order('start_date', { ascending: false }),
-        supabase.from('profiles').select('partner_name').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('partner_name, greeting_name').eq('id', user.id).maybeSingle(),
         supabase
           .from('cycle_notes')
           .select('note_date, content')
@@ -64,8 +68,9 @@ export function Dashboard() {
         setEnds(endDates)
       }
 
-      if (!profileRes.error && profileRes.data?.partner_name) {
-        setPartnerName(profileRes.data.partner_name)
+      if (!profileRes.error && profileRes.data) {
+        setPartnerName(profileRes.data.partner_name ?? undefined)
+        setGreetingName(profileRes.data.greeting_name ?? undefined)
       }
 
       if (notesRes.data) {
@@ -90,8 +95,10 @@ export function Dashboard() {
     load()
   }, [user, refreshKey])
 
+  const isFuture = (d: Date) => isoOf(d) > isoOf(new Date())
+
   const addStart = async (date: Date) => {
-    if (!user) return
+    if (!user || isFuture(date)) return
     const dateStr = isoOf(date)
     const { error } = await supabase
       .from('period_starts')
@@ -103,8 +110,23 @@ export function Dashboard() {
     }
   }
 
-  const addEnd = async (startDate: Date, endDate: Date) => {
+  const deleteStart = async (startDate: Date) => {
     if (!user) return
+    const startStr = isoOf(startDate)
+    const { error } = await supabase
+      .from('period_starts')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('start_date', startStr)
+    if (error) return
+    const keep = starts.map((s) => isoOf(s) !== startStr)
+    setStarts(starts.filter((_, i) => keep[i]))
+    setEnds(ends.filter((_, i) => keep[i]))
+    setSelectedDay(null)
+  }
+
+  const addEnd = async (startDate: Date, endDate: Date) => {
+    if (!user || isFuture(endDate)) return
     const startStr = isoOf(startDate)
     const endStr = isoOf(endDate)
     const { error } = await supabase
@@ -123,16 +145,29 @@ export function Dashboard() {
     }
   }
 
+  const splashEl = splash ? (
+    <StartSplash name={greetingName} ready={!loading} onDone={hideSplash} />
+  ) : null
+
+  // Úvod stojí ve všech třech větvích jako první dítě fragmentu, aby ho
+  // React po načtení dat nepřipojil znovu a nespustil mu časovač od nuly.
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
-        <p style={{ color: 'var(--ink-2)' }}>Načítám…</p>
-      </div>
+      <>
+        {splashEl}
+        {!splash && (
+          <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+            <p style={{ color: 'var(--ink-2)' }}>Načítám…</p>
+          </div>
+        )}
+      </>
     )
   }
 
   if (!starts.length) {
     return (
+      <>
+      {splashEl}
       <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 16 }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ color: 'var(--ink-2)', marginBottom: 16 }}>
@@ -143,6 +178,7 @@ export function Dashboard() {
           </a>
         </div>
       </div>
+      </>
     )
   }
 
@@ -158,6 +194,8 @@ export function Dashboard() {
   const isToday = day === current.day
 
   return (
+    <>
+    {splashEl}
     <div style={{ minHeight: '100vh' }}>
       <div className="wrap">
         <header className="bar">
@@ -367,6 +405,7 @@ export function Dashboard() {
       {trackingDate && (
         <DayTrackingModal
           date={trackingDate}
+          today={now}
           onClose={() => setTrackingDate(null)}
           onSave={() => {
             setTrackingDate(null)
@@ -376,8 +415,10 @@ export function Dashboard() {
           ends={ends}
           onPeriodStart={addStart}
           onPeriodEnd={addEnd}
+          onPeriodDelete={deleteStart}
         />
       )}
     </div>
+    </>
   )
 }

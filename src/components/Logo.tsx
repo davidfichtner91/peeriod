@@ -45,11 +45,12 @@ export function Logo({ variant = 'gradient', size = 40, className = '' }: LogoPr
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <circle cx="100" cy="100" r="36" />
-        <path d="M125.5 74.5 L162 38" />
-        <path d="M140 38 H162 V60" />
-        <path d="M100 136 V178" />
-        <path d="M78 160 H122" />
+        {/* pathLength 1: animace kreslení (.logo-draw) počítá s délkou tahu 1 */}
+        <circle cx="100" cy="100" r="36" pathLength={1} />
+        <path d="M125.5 74.5 L162 38" pathLength={1} />
+        <path d="M140 38 H162 V60" pathLength={1} />
+        <path d="M100 136 V178" pathLength={1} />
+        <path d="M78 160 H122" pathLength={1} />
       </g>
     </svg>
   )

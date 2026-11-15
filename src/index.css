@@ -368,6 +368,20 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
   cursor: pointer; border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
 }
 .btn.ghost { background: none; color: var(--ink-2); border-color: var(--line-2); }
+.btn.danger { background: #B42318; border-color: #B42318; color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Vysvětlení pod tlačítky v okně dne. --ink-2, ne --ink-3: drobný text
+   v --ink-3 nemá kontrast 4,5 : 1. */
+.hint { font-size: 13px; line-height: 1.5; color: var(--ink-2); margin: 0 0 8px; max-width: 52ch; }
+
+/* Potvrzení smazání se skládá na místo tlačítek, ne do dalšího okna. */
+.confirm {
+  border: 1px solid #B42318; border-radius: var(--r);
+  padding: 12px 14px; max-width: 52ch;
+}
+.confirm p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+.confirm .logbar { margin-bottom: 0; }
 
 .stats { display: flex; gap: 26px; flex-wrap: wrap; margin-bottom: 18px; }
 .stat b {
@@ -624,4 +638,41 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
 .dplink {
   background: none; border: 0; font-size: 13px; color: var(--accent);
   cursor: pointer; font-weight: 500;
+}
+
+/* ---------- úvod při spuštění ---------- */
+.splash {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-content: center; justify-items: center; gap: 22px;
+  padding: env(safe-area-inset-top, 0px) 16px env(safe-area-inset-bottom, 0px);
+  background: var(--paper);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.splash--out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+/* Logo se nakreslí tah po tahu: nejdřív kruh, pak šipka a kříž. */
+.logo-draw { animation: splash-pop .9s cubic-bezier(.2, .8, .2, 1) both; }
+.logo-draw circle, .logo-draw path {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: logo-draw .6s cubic-bezier(.6, 0, .2, 1) forwards;
+}
+.logo-draw path:nth-of-type(1) { animation-delay: .45s; }
+.logo-draw path:nth-of-type(2) { animation-delay: .6s; }
+.logo-draw path:nth-of-type(3) { animation-delay: .75s; }
+.logo-draw path:nth-of-type(4) { animation-delay: .9s; }
+
+.splash-hi {
+  margin: 0; font-family: var(--font-display); font-weight: 700;
+  font-size: 30px; letter-spacing: -0.015em; color: var(--ink);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .5s ease .1s, transform .5s ease .1s;
+}
+.splash-hi--in { opacity: 1; transform: none; }
+
+@keyframes logo-draw { to { stroke-dashoffset: 0; } }
+@keyframes splash-pop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-draw, .logo-draw circle, .logo-draw path { animation: none; stroke-dashoffset: 0; }
+  .splash, .splash-hi { transition: opacity .2s linear; transform: none; }
 }

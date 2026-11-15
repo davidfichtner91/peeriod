@@ -23,26 +23,35 @@ const iso = (d: Date) => {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
 
+const short = (d: Date) => `${d.getDate()}. ${d.getMonth() + 1}.`
+
 interface DayTrackingModalProps {
   date: Date
+  /** dnešek, proti kterému se hlídá zápis do budoucnosti */
+  today: Date
   onClose: () => void
   onSave?: () => void
   starts?: Date[]
   ends?: (Date | null)[]
   onPeriodStart?: (date: Date) => void
   onPeriodEnd?: (startDate: Date, endDate: Date) => void
+  onPeriodDelete?: (startDate: Date) => void
 }
 
-export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = [], onPeriodStart, onPeriodEnd }: DayTrackingModalProps) {
+export function DayTrackingModal({ date, today, onClose, onSave, starts = [], ends = [], onPeriodStart, onPeriodEnd, onPeriodDelete }: DayTrackingModalProps) {
   const { user } = useAuth()
   const [notes, setNotes] = useState('')
   const [symptoms, setSymptoms] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [recordingPeriod, setRecordingPeriod] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   useBackCloses(onClose)
 
   const dateStr = iso(date)
+  // Začátek, konec ani příznaky nejdou zapsat dopředu: budoucí začátek by
+  // přepsal průměrnou délku cyklu a s ní celou předpověď.
+  const isFuture = dateStr > iso(today)
 
   useEffect(() => {
     const load = async () => {
@@ -196,6 +205,14 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
     }
   }
 
+  const handleDeleteStart = () => {
+    if (!onPeriodDelete) return
+    onPeriodDelete(date)
+    onClose()
+  }
+
+  const nothingToEnd = cycleContainingDate === -1 && extendableEnd === -1 && !lastUnclosed
+
   const handleRecordEnd = async () => {
     if (!onPeriodEnd) return
     const startToRecord = cycleContainingDate !== -1 ? starts[cycleContainingDate] : (extendableEnd !== -1 ? starts[extendableEnd] : lastUnclosed)
@@ -217,24 +234,54 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
 
         <div style={{ marginTop: 24, marginBottom: 24 }}>
           <p className="eyebrow">Menstruace</p>
-          <div className="logbar">
-            <button
-              className="btn"
-              onClick={handleRecordStart}
-              disabled={recordingPeriod || hasStartToday}
-              title={hasStartToday ? 'Záznam pro tento den už existuje' : ''}
-            >
-              Zaznamenat začátek
-            </button>
-            <button
-              className="btn ghost"
-              onClick={handleRecordEnd}
-              disabled={recordingPeriod || (cycleContainingDate === -1 && extendableEnd === -1 && !lastUnclosed)}
-              title={(cycleContainingDate === -1 && extendableEnd === -1 && !lastUnclosed) ? 'Není záznam menstruace' : ''}
-            >
-              {cycleContainingDate !== -1 && ends[cycleContainingDate] ? 'Změnit konec' : (extendableEnd !== -1 && ends[extendableEnd] ? 'Posunout konec' : 'Zaznamenat konec')}
-            </button>
-          </div>
+          {isFuture ? (
+            <p className="hint">
+              Tenhle den ještě nenastal. Začátek, konec i příznaky jdou zapsat, až přijde.
+              Poznámku si můžeš uložit už teď.
+            </p>
+          ) : confirmingDelete ? (
+            <div className="confirm">
+              <p>
+                Smazat záznam začátku z <b>{short(date)}</b>? Přepočítá se průměrná délka
+                cyklu i předpověď a vrátit to jde jen novým zápisem.
+              </p>
+              <div className="logbar">
+                <button className="btn danger" onClick={handleDeleteStart}>
+                  Smazat záznam
+                </button>
+                <button className="btn ghost" onClick={() => setConfirmingDelete(false)}>
+                  Nechat
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="logbar">
+                {hasStartToday ? (
+                  <button className="btn ghost" onClick={() => setConfirmingDelete(true)}>
+                    Smazat začátek
+                  </button>
+                ) : (
+                  <button className="btn" onClick={handleRecordStart} disabled={recordingPeriod}>
+                    Zaznamenat začátek
+                  </button>
+                )}
+                <button
+                  className="btn ghost"
+                  onClick={handleRecordEnd}
+                  disabled={recordingPeriod || nothingToEnd}
+                >
+                  {cycleContainingDate !== -1 && ends[cycleContainingDate] ? 'Změnit konec' : (extendableEnd !== -1 && ends[extendableEnd] ? 'Posunout konec' : 'Zaznamenat konec')}
+                </button>
+              </div>
+              {hasStartToday && (
+                <p className="hint">Začátek menstruace je pro tento den zapsaný.</p>
+              )}
+              {nothingToEnd && (
+                <p className="hint">Konec jde zapsat, až bude zapsaný začátek.</p>
+              )}
+            </>
+          )}
         </div>
 
         <div style={{ marginTop: 24, marginBottom: 24 }}>
@@ -245,6 +292,7 @@ export function DayTrackingModal({ date, onClose, onSave, starts = [], ends = []
                 <input
                   type="checkbox"
                   checked={symptoms.has(symptom)}
+                  disabled={isFuture}
                   onChange={() => toggleSymptom(symptom)}
                 />
                 {symptom}

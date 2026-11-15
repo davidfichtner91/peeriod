@@ -8,6 +8,7 @@ import { DatePicker } from './DatePicker'
 export function Onboarding() {
   const [startDate, setStartDate] = useState('')
   const [partnerName, setPartnerName] = useState('')
+  const [greetingName, setGreetingName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -28,11 +29,15 @@ export function Onboarding() {
         .insert({ user_id: user.id, start_date: dateStr })
       if (startErr) throw startErr
 
-      if (partnerName.trim()) {
+      if (partnerName.trim() || greetingName.trim()) {
         // upsert, ne update: řádek v profiles nemusí existovat
         const { error: profErr } = await supabase
           .from('profiles')
-          .upsert({ id: user.id, partner_name: partnerName.trim() })
+          .upsert({
+            id: user.id,
+            partner_name: partnerName.trim() || null,
+            greeting_name: greetingName.trim() || null,
+          })
         if (profErr) throw profErr
       }
 
@@ -105,6 +110,32 @@ export function Onboarding() {
               value={partnerName}
               onChange={(e) => setPartnerName(e.target.value)}
               placeholder="Např. Tereza"
+              className="w-full px-4 py-2 font-body text-sm"
+              style={{
+                border: '1px solid var(--line-2)',
+                borderRadius: '9px',
+                backgroundColor: 'var(--card)',
+                color: 'var(--ink)',
+              }}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="greeting-name"
+              className="block text-sm font-medium mb-2"
+              style={{ color: 'var(--ink)' }}
+            >
+              Jak tě pozdravit při spuštění? (volitelné)
+            </label>
+            <input
+              id="greeting-name"
+              type="text"
+              value={greetingName}
+              onChange={(e) => setGreetingName(e.target.value)}
+              placeholder="Např. Davide"
+              maxLength={40}
+              autoComplete="off"
               className="w-full px-4 py-2 font-body text-sm"
               style={{
                 border: '1px solid var(--line-2)',
