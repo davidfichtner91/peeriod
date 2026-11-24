@@ -452,6 +452,10 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
   background: none; border: 2px dashed var(--c); color: var(--ink);
   box-shadow: none; font-weight: 600;
 }
+/* Srdíčko intimity vlevo dole, naproti glyfu fáze. Na začátku menstruace
+   zůstává vidět, i když se glyf fáze schová. */
+.cell svg.heart { top: auto; right: auto; bottom: 3px; left: 3px; width: 10px; height: 10px; }
+.cell.start svg.heart { display: block; }
 .cell.today { border: 2px solid var(--ink); font-weight: 600; }
 .cell.today.start { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--c); }
 .cell.blank { background: none; cursor: default; border: 0; }
@@ -586,6 +590,17 @@ label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
 .symptom-checkbox input {
   cursor: pointer; margin: 0; width: 18px; height: 18px;
   accent-color: var(--ink);
+}
+
+/* Dvojice protikladů vždy vedle sebe na jednom řádku. */
+.symptom-grid.symptom-pairs { grid-template-columns: 1fr 1fr; }
+
+.intimacy { display: flex; gap: 8px; flex-wrap: wrap; }
+.intimacy .btn { display: inline-flex; align-items: center; gap: 8px; }
+.intimacy .btn svg { width: 16px; height: 16px; }
+.intimacy .btn[aria-pressed="true"] {
+  border-color: #E5484D;
+  background: color-mix(in srgb, #E5484D 12%, transparent);
 }
 
 .modal textarea { width: 100%; }

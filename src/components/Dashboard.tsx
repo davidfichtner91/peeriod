@@ -10,6 +10,7 @@ import { PhaseContent } from './PhaseContent'
 import { CalendarGrid } from './CalendarGrid'
 import { DayTrackingModal } from './DayTrackingModal'
 import { NotesLog } from './NotesLog'
+import type { IntimacyKind } from './Heart'
 import { StartSplash, shouldShowSplash } from './StartSplash'
 
 /** 1 den, 2–4 dny, 5+ dní */
@@ -35,6 +36,7 @@ export function Dashboard() {
   const [trackingDate, setTrackingDate] = useState<Date | null>(null)
   const [allNotes, setAllNotes] = useState<Array<{ date: Date; content: string }>>([])
   const [allSymptoms, setAllSymptoms] = useState<Array<{ date: Date; symptom: string }>>([])
+  const [intimacy, setIntimacy] = useState<Map<string, IntimacyKind>>(new Map())
   /** Bump po uložení v modalu, ať se poznámky a příznaky načtou znovu. */
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -42,7 +44,7 @@ export function Dashboard() {
   useEffect(() => {
     const load = async () => {
       if (!user) return
-      const [startsRes, profileRes, notesRes, symptomsRes] = await Promise.all([
+      const [startsRes, profileRes, notesRes, symptomsRes, intimacyRes] = await Promise.all([
         supabase
           .from('period_starts')
           .select('start_date, end_date')
@@ -59,7 +61,15 @@ export function Dashboard() {
           .select('symptom_date, symptom')
           .eq('user_id', user.id)
           .order('symptom_date', { ascending: true }),
+        supabase
+          .from('cycle_intimacy')
+          .select('intimacy_date, kind')
+          .eq('user_id', user.id),
       ])
+
+      if (intimacyRes.data) {
+        setIntimacy(new Map(intimacyRes.data.map((r) => [r.intimacy_date, r.kind as IntimacyKind])))
+      }
 
       if (startsRes.data?.length) {
         const startDates = startsRes.data.map((r) => new Date(r.start_date + 'T00:00:00'))
@@ -383,6 +393,7 @@ export function Dashboard() {
         <CalendarGrid
           starts={starts}
           ends={ends}
+          intimacy={intimacy}
           now={now}
           onDaySelect={(d) => setSelectedDay(d === current.day ? null : d)}
           onTrackingClick={setTrackingDate}

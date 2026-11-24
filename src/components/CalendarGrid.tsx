@@ -3,10 +3,13 @@ import { cycleAt, isStart, phaseFor, ORDER, PhaseKey, Phase } from '../utils/cyc
 import { PHASES } from '../data/phases'
 import { Glyph } from './Glyph'
 import { PhaseTooltip } from './PhaseTooltip'
+import { Heart, INTIMACY_LABEL, type IntimacyKind } from './Heart'
 
 interface CalendarGridProps {
   starts: Date[]
   ends?: (Date | null)[]
+  /** klíč je lokální datum YYYY-MM-DD */
+  intimacy?: Map<string, IntimacyKind>
   now: Date
   onDaySelect: (day: number) => void
   onTrackingClick?: (date: Date) => void
@@ -21,7 +24,9 @@ const DOW = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne']
 const mid = (d: Date): number =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
-export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick }: CalendarGridProps) {
+const pad = (n: number) => String(n).padStart(2, '0')
+
+export function CalendarGrid({ starts, ends, intimacy, now, onDaySelect, onTrackingClick }: CalendarGridProps) {
   const [offset, setOffset] = useState(0)
   const phases = PHASES as Record<PhaseKey, Phase>
 
@@ -42,6 +47,7 @@ export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick }
       const phase = phaseFor(c.day, c.len, c.menLen)
       const startish = isStart(date, starts) || (c.predicted && c.day === 1)
       const isToday = mid(date) === mid(now)
+      const heart = intimacy?.get(`${first.getFullYear()}-${pad(first.getMonth() + 1)}-${pad(d)}`)
 
       const cls = [
         'cell',
@@ -61,10 +67,11 @@ export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick }
             onDaySelect(c.day)
             onTrackingClick?.(date)
           }}
-          aria-label={`${d}. ${MONTHS[first.getMonth()].toLowerCase()}, den ${c.day} — ${phase.name}${c.predicted ? ', předpověď' : ''}`}
+          aria-label={`${d}. ${MONTHS[first.getMonth()].toLowerCase()}, den ${c.day} — ${phase.name}${c.predicted ? ', předpověď' : ''}${heart ? `, ${INTIMACY_LABEL[heart].toLowerCase()}` : ''}`}
         >
           <Glyph type={phase.glyph} color={phase.color} />
           <span className="num">{d}</span>
+          {heart && <Heart kind={heart} className="heart" />}
         </button>
       )
     }
@@ -111,6 +118,7 @@ export function CalendarGrid({ starts, ends, now, onDaySelect, onTrackingClick }
         Plná políčka vycházejí ze zaznamenaných cyklů, čárkovaná jsou předpověď.
         Sytě vybarvený den je zaznamenaný začátek menstruace, čárkovaný rámeček
         bez výplně je předpokládaný začátek dalšího.
+        {intimacy && intimacy.size > 0 && ' Plné srdíčko je sex, obrysové mazlení.'}
       </p>
     </div>
   )

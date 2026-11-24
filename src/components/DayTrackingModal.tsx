@@ -2,19 +2,24 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { useBackCloses } from '../lib/backButton'
+import { Heart, INTIMACY_LABEL, type IntimacyKind } from './Heart'
 
-const SYMPTOMS = [
-  'Bolest',
-  'Únava',
-  'Nausea',
-  'Nadýmání',
-  'Citlivá prsa',
-  'Bolest hlavy',
-  'Nespavost',
-  'Zvýšené libido',
-  'Citlivost/plačtivost',
-  'Podrážděnost',
+// Názvy se ukládají do cycle_symptoms jako text, takže přejmenování by
+// odtrhlo staré záznamy. Nové položky jen přidávat.
+const BODY_SYMPTOMS = ['Bolest', 'Nausea', 'Nadýmání', 'Citlivá prsa', 'Bolest hlavy']
+
+/** Nálada a energie po dvojicích. Zaškrtnutí jedné strany zruší druhou. */
+const MOOD_PAIRS: [string, string][] = [
+  ['Únava', 'Plno energie'],
+  ['Nespavost', 'Dobrý spánek'],
+  ['Podrážděnost', 'Pohoda'],
+  ['Citlivost/plačtivost', 'Vyrovnanost'],
+  ['Zvýšené libido', 'Snížené libido'],
 ]
+
+const OPPOSITE = new Map(MOOD_PAIRS.flatMap(([a, b]) => [[a, b], [b, a]]))
+
+const INTIMACY_KINDS: IntimacyKind[] = ['cuddle', 'sex']
 
 // Lokální datum → YYYY-MM-DD. Ne toISOString() — ta převádí do UTC a v našem
 // pásmu posune lokální půlnoc na předchozí den.
@@ -42,8 +47,10 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
   const { user } = useAuth()
   const [notes, setNotes] = useState('')
   const [symptoms, setSymptoms] = useState<Set<string>>(new Set())
+  const [intimacy, setIntimacy] = useState<IntimacyKind | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
   const [recordingPeriod, setRecordingPeriod] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   useBackCloses(onClose)
@@ -58,7 +65,7 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
       if (!user) return
       setLoading(true)
 
-      const [notesRes, symptomsRes] = await Promise.all([
+      const [notesRes, symptomsRes, intimacyRes] = await Promise.all([
         supabase
           .from('cycle_notes')
           .select('content')
@@ -70,7 +77,15 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
           .select('symptom')
           .eq('user_id', user.id)
           .eq('symptom_date', dateStr),
+        supabase
+          .from('cycle_intimacy')
+          .select('kind')
+          .eq('user_id', user.id)
+          .eq('intimacy_date', dateStr)
+          .maybeSingle(),
       ])
+
+      setIntimacy((intimacyRes.data?.kind as IntimacyKind | undefined) ?? null)
 
       if (notesRes.data?.content) {
         setNotes(notesRes.data.content)
@@ -92,6 +107,8 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
       next.delete(symptom)
     } else {
       next.add(symptom)
+      const opposite = OPPOSITE.get(symptom)
+      if (opposite) next.delete(opposite)
     }
     setSymptoms(next)
   }
@@ -99,8 +116,26 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
   const handleSave = async () => {
     if (!user) return
     setSaving(true)
+    setSaveError(false)
 
     try {
+      if (intimacy) {
+        const { error } = await supabase
+          .from('cycle_intimacy')
+          .upsert(
+            { user_id: user.id, intimacy_date: dateStr, kind: intimacy },
+            { onConflict: 'user_id,intimacy_date' }
+          )
+        if (error) throw error
+      } else {
+        const { error } = await supabase
+          .from('cycle_intimacy')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('intimacy_date', dateStr)
+        if (error) throw error
+      }
+
       // Save/update notes
       if (notes) {
         const { error } = await supabase
@@ -120,11 +155,12 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
       }
 
       // Delete all symptoms for this date, then add the selected ones
-      await supabase
+      const { error: clearError } = await supabase
         .from('cycle_symptoms')
         .delete()
         .eq('user_id', user.id)
         .eq('symptom_date', dateStr)
+      if (clearError) throw clearError
 
       if (symptoms.size > 0) {
         const { error } = await supabase
@@ -141,10 +177,25 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
 
       onSave?.()
       onClose()
+    } catch {
+      // Okno zůstane otevřené s vyplněnými údaji, ať jde uložit znovu.
+      setSaveError(true)
     } finally {
       setSaving(false)
     }
   }
+
+  const symptomBox = (symptom: string) => (
+    <label key={symptom} className="symptom-checkbox">
+      <input
+        type="checkbox"
+        checked={symptoms.has(symptom)}
+        disabled={isFuture}
+        onChange={() => toggleSymptom(symptom)}
+      />
+      {symptom}
+    </label>
+  )
 
   if (loading) {
     return (
@@ -236,7 +287,7 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
           <p className="eyebrow">Menstruace</p>
           {isFuture ? (
             <p className="hint">
-              Tenhle den ještě nenastal. Začátek, konec i příznaky jdou zapsat, až přijde.
+              Tenhle den ještě nenastal. Začátek, konec, příznaky i srdíčko jdou zapsat, až přijde.
               Poznámku si můžeš uložit už teď.
             </p>
           ) : confirmingDelete ? (
@@ -285,18 +336,32 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
         </div>
 
         <div style={{ marginTop: 24, marginBottom: 24 }}>
-          <p className="eyebrow">Příznaky</p>
-          <div className="symptom-grid">
-            {SYMPTOMS.map((symptom) => (
-              <label key={symptom} className="symptom-checkbox">
-                <input
-                  type="checkbox"
-                  checked={symptoms.has(symptom)}
-                  disabled={isFuture}
-                  onChange={() => toggleSymptom(symptom)}
-                />
-                {symptom}
-              </label>
+          <p className="eyebrow">Tělo</p>
+          <div className="symptom-grid">{BODY_SYMPTOMS.map(symptomBox)}</div>
+        </div>
+
+        <div style={{ marginTop: 24, marginBottom: 24 }}>
+          <p className="eyebrow">Nálada a energie</p>
+          <div className="symptom-grid symptom-pairs">
+            {MOOD_PAIRS.flatMap((pair) => pair.map(symptomBox))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 24, marginBottom: 24 }}>
+          <p className="eyebrow">Intimita</p>
+          <div className="intimacy" role="group" aria-label="Intimita">
+            {INTIMACY_KINDS.map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                className="btn ghost"
+                aria-pressed={intimacy === kind}
+                disabled={isFuture}
+                onClick={() => setIntimacy(intimacy === kind ? null : kind)}
+              >
+                <Heart kind={kind} />
+                {INTIMACY_LABEL[kind]}
+              </button>
             ))}
           </div>
         </div>
@@ -312,6 +377,11 @@ export function DayTrackingModal({ date, today, onClose, onSave, starts = [], en
           />
         </div>
 
+        {saveError && (
+          <p className="hint" role="alert" style={{ color: '#B42318' }}>
+            Uložit se nepodařilo, zkontroluj připojení a zkus to znovu.
+          </p>
+        )}
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button className="btn ghost" onClick={onClose}>
             Zavřít
